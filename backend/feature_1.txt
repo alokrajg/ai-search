@@ -1,0 +1,328 @@
+# Feature 1 — Overview (one sentence)
+
+Continuously run brand-specific seed queries against selected generative engines (Perplexity for MVP), extract any explicit or implicit citations of the brand’s domain/pages, store structured citation events, and produce aggregated signals (visibility score, top pages, trends) for the dashboard.
+
+---
+
+# User value & what this feature provides
+
+* Shows where AI engines surface your brand content (direct citations, quoted snippets).
+* Primary KPI: “visibility” — how often your domain is cited in AI answers for target queries.
+* Enables investigation: which pages win, which queries return citations, which engine is most favorable.
+* Baseline for optimizations (Feature 2) and alerts (Feature 3).
+
+---
+
+# High-level workflow
+
+1. **Seed setup (manual/one-time)**: brand stores a small list of canonical pages (URLs) + seed queries. (Stored in Firestore.)
+2. **Scheduled query runner**: job loops across queries + engines, calls Perplexity API, receives an answer + citations.
+3. **Citation extractor**: parse the response to find any cited URLs, domain mentions, and quoted snippets.
+4. **Matcher**: match citations to the brand’s registered pages/domains (exact, subpath, domain-level, fuzzy).
+5. **Store citation event**: create a `citation` document with metadata + computed confidence score.
+6. **Aggregate**: nightly job computes visibility metrics and top pages for fast dashboard reads.
+7. **Expose APIs**: to fetch events, time series, top pages, ranking-by-model, CSV export.
+
+---
+
+# Firestore schema (recommended documents & example fields)
+
+Collections:
+
+* `brands/{brand_id}`
+
+  ```json
+  {
+    "name": "Acme Inc",
+    "domains": ["acme.com", "products.acme.com"],
+    "canonical_pages": ["https://acme.com/product-x", ...],
+    "canonical_facts": { "pricing": "199", "product_name": "AcmeX" }
+  }
+  ```
+* `queries/{query_id}` (or as subcollection under brand):
+
+  ```json
+  {
+    "brand_id": "brand_123",
+    "text": "how to crop images on mobile",
+    "category": "product-help",
+    "created_at": <timestamp>,
+    "active": true,
+    "engine_targets": ["perplexity"]
+  }
+  ```
+* `engines/{engine_id}`: engine metadata & rate limits
+
+  ```json
+  {
+    "name": "perplexity",
+    "api_endpoint": "...",
+    "rate_limit_per_min": 60
+  }
+  ```
+* `runs/{run_id}` (job runs for debugging):
+
+  ```json
+  {
+    "brand_id":"brand_123",
+    "query_id":"q_1",
+    "engine":"perplexity",
+    "started_at": "...",
+    "ended_at": "...",
+    "status":"success",
+    "raw_response_ref":"storage/path/or/blob"
+  }
+  ```
+* `citations/{citation_id}` (core record):
+
+  ```json
+  {
+    "brand_id":"brand_123",
+    "query_id":"q_1",
+    "engine":"perplexity",
+    "timestamp": "...",
+    "snippet":"\"AcmeX allows resizing with one tap…\"",
+    "matched_url":"https://acme.com/product-x",
+    "matched_domain":"acme.com",
+    "confidence": 0.86,
+    "raw_answer":"full answer text",
+    "source_urls":[ "https://acme.com/product-x", "https://other.com/article" ],
+    "dedup_group_id":"hash_of_normalized_match",
+    "metadata": { "answer_id":"...", "response_rank":1 }
+  }
+  ```
+* `aggregates/{brand_id}/{date}` — daily/weekly aggregated metrics:
+
+  ```json
+  { "date":"2025-10-16","citations_count":24,"unique_pages":6,"visibility_score":62.3 }
+  ```
+
+---
+
+# Citation extraction & matching algorithm
+
+1. **Parse engine response**
+
+   * Perplexity often returns: answer text + explicit "sources" list. Use both.
+   * Save raw response (in runs collection / storage) for debugging.
+
+2. **Extraction steps**
+
+   * Extract `sources` if provided (URL list).
+   * Extract quoted snippets and inline citations inside answer text with simple NLP rules (regex for `http(s)://` and patterns like `[1]`, `(source)`).
+   * Also extract domain mentions (strings like “on acme.com”, “AcmeX product page”).
+
+3. **Matching priority**
+
+   * **Exact page URL match**: if source URL equals a canonical page → HIGH confidence.
+   * **Subpath match**: source URL path startswith canonical page → HIGH.
+   * **Domain match**: source URL domain equals one of brand domains → MEDIUM.
+   * **Mention match**: brand domain mentioned in answer text but not a URL → LOW→MEDIUM.
+   * **Fuzzy match**: title or snippet similarity to page content (semantic similarity) → use embeddings when needed → MEDIUM.
+
+4. **Fuzzy logic / similarity**
+
+   * If no explicit source URL but the snippet resembles a canonical paragraph: embed snippet and canonical page summary, compute cosine similarity (all-MiniLM or similar). Threshold (e.g., >0.75) → treat as a match.
+
+5. **Deduplication**
+
+   * Normalize snippet (strip punctuation, lowercase), then hash top-K tokens → `dedup_group_id`.
+   * If a citation with same dedup ID exists within X hours from same engine → ignore (or update existing record with aggregated `seen_count`).
+
+6. **Confidence score composition**
+   Weighted sum (0–1):
+
+   * explicit_url_match: 0.5
+   * domain_mention: 0.2
+   * snippet-semantic-similarity-score: up to 0.3
+   * engine-provided confidence (if available): up to 0.2 (scaled and capped)
+     Example: `confidence = clamp(0.4 * url_match + 0.25 * domain_mention + 0.35 * sim_score)` — tune with tests.
+
+7. **Temporal reasoning**
+
+   * Add `first_seen` and `last_seen` fields for each dedup_group_id to compute time-to-first-citation.
+
+---
+
+# Perplexity integration (practical notes + pseudocode)
+
+* Use Perplexity API for answers. Typical call pattern:
+
+  ```python
+  from perplexity import Perplexity
+  client = Perplexity(api_key=os.environ["PERPLEXITY_KEY"])
+  resp = client.chat.completions.create(model="sonar-pro", messages=[{"role":"user","content": query_text}])
+  answer = resp.choices[0].message.content
+  sources = resp.choices[0].sources  # or parse resp for provided sources
+  ```
+* Save `resp` in `runs` (or raw blob in Storage).
+* If their SDK doesn’t give source URLs, parse `answer` for URL patterns and domain mentions.
+
+**Rate-limit & reliability**
+
+* Perplexity rate limits: assume `R` calls/minute (read from engine config).
+* Implement a job queue with concurrency limit `<= R`.
+* Implement retry with exponential backoff + jitter (on 429/5xx).
+* Batch queries when appropriate: e.g., combine low-priority queries into a single run with an internal throttle.
+
+---
+
+# Scheduling / orchestration
+
+Two practical options for MVP backend (skip full infra for now):
+
+Option A — Cron/APScheduler on a single worker VM / container:
+
+* APScheduler jobs:
+
+  * `query_runner` job runs every N minutes/hours → enqueues tasks per brand/query.
+  * `aggregation_job` runs nightly to compute `aggregates` for dashboard.
+* Use a lightweight queue (Redis) if concurrency needed. For MVP you can run sequentially.
+
+Option B — Cloud functions + Cloud Scheduler:
+
+* Cloud Scheduler triggers a Cloud Function that loops queries and calls the Perplexity API.
+* Store results in Firestore. Use Cloud Tasks for retries.
+
+Implementation detail for MVP: use a Python script run by APScheduler (local or GCP scheduler) that reads Firestore queries and runs them sequentially (simpler, easier to control rate).
+
+---
+
+# API endpoints (FastAPI example) — backend-first
+
+Expose these to the future dashboard or to manual testing.
+
+* `POST /v1/brand/{brand_id}/queries` — add a seed query.
+* `GET  /v1/brand/{brand_id}/visibility?start=YYYY-MM-DD&end=...&engine=perplexity`
+  → returns time-series of `citations_count` & `visibility_score`.
+* `GET  /v1/brand/{brand_id}/top-pages?period=last_30d&engine=perplexity`
+  → returns array of `{ page_url, citations_count, visibility_share }`.
+* `GET  /v1/brand/{brand_id}/citations?query_id=&page_url=&engine=&limit=`
+  → returns raw citation events (for CSV export).
+* `POST /v1/debug/run-query` — manual runner to test single query (useful while developing).
+
+Example response contract for a citation event:
+
+```json
+{
+ "id": "cit_234",
+ "query_text":"how to crop images",
+ "engine":"perplexity",
+ "timestamp":"2025-10-16T10:00:00Z",
+ "snippet":"AcmeX lets you crop with one tap",
+ "matched_url":"https://acme.com/product-x",
+ "confidence":0.86,
+ "raw_answer":"full answer text"
+}
+```
+
+---
+
+# Aggregates & “visibility score” definition (how to compute the dashboard metric)
+
+Visibility Score (simple, interpretable MVP):
+
+* For a time window (e.g., last 7 days):
+  `visibility_score = 100 * (weighted_citations / max_possible_weighted_citations)`
+* Weighted citations: sum over events of `(weight_by_engine * confidence * novelty_factor)`.
+
+  * `weight_by_engine` is optional if you want to emphasize certain engines.
+  * `novelty_factor` = 1 for first citation within period, 0.5 for repeat within same day, etc.
+* Normalize by total queries run or by competitor baseline if available.
+
+For MVP, you can compute:
+
+* `weighted_citations = sum(confidence)` across events in window (per brand)
+* Normalize by `max(confidence_sum_among_competitors)` to create a 0–100 rank score.
+
+Also compute:
+
+* `citations_per_domain/week`
+* `% of queries returning the brand`
+* `time_to_first_citation` for pages published between date A and now
+
+These feed the cards in your screenshots: big visibility number, ranking-by-model rings, timeline chart, top pages table.
+
+---
+
+# Deduplication, storage costs, and retention
+
+* **Deduplicate** similar events per engine/query within small windows. Keep one canonical `citation` doc per dedup group and update `seen_count` and `last_seen`.
+* **Storage**: save full raw responses only for debugging (e.g., older than 90 days move to cold storage or delete).
+* **Retention policy**: keep detailed events for 365 days, or allow configurable retention.
+
+---
+
+# Logging, monitoring & observability
+
+* Log job runs (`runs` collection) and failures to Firestore or a logging solution.
+* Export slow jobs / errors via Cloud Logging or email alerts for job failures.
+* Track per-engine quota usage and surface warning if approaching limits.
+
+---
+
+# Testing & validation (must-dos)
+
+* Unit tests for matching logic: exact, domain, fuzzy/semantic cases.
+* Integration test: mock Perplexity responses with:
+
+  * explicit URL source,
+  * domain mention,
+  * snippet but no URL,
+  * contradictory or ambiguous text.
+* End-to-end test: insert brand canonical pages → run scheduler with a controlled query → check citation created and aggregated.
+* Manual verification UI (internal) that shows raw responses and highlight matched text — invaluable for prompt tuning.
+
+---
+
+# Edge cases & practical gotchas
+
+* Engines change formats: keep parsing resilient (use stored raw JSON).
+* Rate limits / IP blocks: use backoff and obey API TOS. Don’t scrape aggressively.
+* Ambiguous matches: keep low-confidence matches separate so you can tune.
+* Competitor citations: store them too (for benchmarking); allow filtering by “source not in brand domains”.
+
+---
+
+# Quick MVP implementation checklist (priority order)
+
+1. Firestore collections + init script for a sample brand and 3 queries.
+2. Small Python runner that:
+
+   * Reads queries,
+   * Calls Perplexity API,
+   * Parses sources & answer,
+   * Runs basic matching and stores `citations`.
+3. Endpoint to fetch raw citations for a brand (for manual verification).
+4. Nightly aggregation job to compute `aggregates`.
+5. Simple script to compute visibility_score for a window.
+6. Logging + retries + basic rate-limit handling.
+7. Add semantic similarity step for fuzzy matches (optional after step 2).
+8. Export CSV API.
+
+---
+
+# How this maps to the screenshots you shared
+
+* The big **Visibility Score** card → computed from `aggregates` (visibility_score).
+* **Ranking by Model** rings → compute per-engine weighted citation sums; convert to ring values.
+* **Visibility Over Time** line → time-series from `aggregates` per day/week.
+* **Top performing pages** → query `citations` grouped by `matched_url` in window → sort by citations_count.
+* Add filters for timeframe and engines on backend endpoints (so frontend can reproduce the UI).
+
+---
+
+# Security & TOS notes (important)
+
+* Never store or expose API keys publicly (use env vars / secrets).
+* Respect Perplexity TOS — ensure usage patterns are allowed (prefer API over scraping).
+* If you later enable multi-tenant / auth, enforce access controls on brand docs.
+
+---
+
+# Next steps I can deliver immediately (pick one)
+
+* Provide a ready-to-run **Python script** (FastAPI + runner + Firestore wiring + example Perplexity call) you can run locally or in a small VM.
+* Or produce **detailed code stubs** for: (a) Perplexity client + parsing, (b) matching + confidence module, (c) Firestore save/aggregator.
+
+Tell me which one you want and I’ll produce the code and example Firestore document payloads next. (No need to confirm the Perplexity choice — you already picked it — so I’ll assume Perplexity + Firestore ready.)
