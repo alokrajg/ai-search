@@ -31,7 +31,7 @@ export default function DashboardMockup() {
       value: "1,247",
       label: "Total Citations",
       change: "+12.5%",
-      color: "from-blue-500 to-blue-600",
+      color: "from-orange-500 to-orange-600",
     },
     {
       icon: AlertTriangle,
@@ -45,7 +45,7 @@ export default function DashboardMockup() {
       value: "5",
       label: "Suggestions",
       change: "2 pending",
-      color: "from-yellow-500 to-yellow-600",
+      color: "from-orange-400 to-orange-500",
     },
     {
       icon: Activity,
@@ -73,22 +73,22 @@ export default function DashboardMockup() {
       }`}
     >
       {/* Main Dashboard Container */}
-      <div className="relative bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
+      <div className="relative bg-gray-800/95 backdrop-blur-sm rounded-2xl shadow-2xl border border-gray-600 overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-gray-200">
+        <div className="bg-gradient-to-r from-gray-700 to-gray-800 px-6 py-4 border-b border-gray-600">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
                 <BarChart3 className="w-4 h-4 text-white" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">GEO Dashboard</h3>
-                <p className="text-xs text-gray-500">Live monitoring</p>
+                <h3 className="font-semibold text-white">GEO Dashboard</h3>
+                <p className="text-xs text-gray-300">Live monitoring</p>
               </div>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-              <span className="text-xs text-gray-500">Online</span>
+              <span className="text-xs text-gray-300">Online</span>
             </div>
           </div>
         </div>
@@ -101,8 +101,8 @@ export default function DashboardMockup() {
                 key={index}
                 className={`relative p-4 rounded-xl border transition-all duration-500 ${
                   activeMetric === index
-                    ? "bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200 shadow-lg scale-105"
-                    : "bg-white border-gray-200 hover:shadow-md"
+                    ? "bg-gradient-to-r from-orange-500/10 to-orange-600/10 border-orange-500/30 shadow-lg scale-105"
+                    : "bg-gray-700 border-gray-600 hover:shadow-md"
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
@@ -112,13 +112,13 @@ export default function DashboardMockup() {
                     <metric.icon className="w-4 h-4 text-white" />
                   </div>
                   {activeMetric === index && (
-                    <Sparkles className="w-4 h-4 text-blue-500 animate-pulse" />
+                    <Sparkles className="w-4 h-4 text-orange-500 animate-pulse" />
                   )}
                 </div>
-                <div className="text-2xl font-bold text-gray-900 mb-1">
+                <div className="text-2xl font-bold text-white mb-1">
                   {metric.value}
                 </div>
-                <div className="text-xs text-gray-600 mb-1">{metric.label}</div>
+                <div className="text-xs text-gray-300 mb-1">{metric.label}</div>
                 <div className="flex items-center text-xs">
                   {metric.change.startsWith("+") ? (
                     <ArrowUpRight className="w-3 h-3 text-green-500 mr-1" />
@@ -144,25 +144,25 @@ export default function DashboardMockup() {
           </div>
 
           {/* Chart Section */}
-          <div className="bg-gray-50 rounded-xl p-4">
+          <div className="bg-gray-700 rounded-xl p-4 border border-gray-600">
             <div className="flex items-center justify-between mb-4">
-              <h4 className="font-semibold text-gray-900">Citation Timeline</h4>
+              <h4 className="font-semibold text-white">Citation Timeline</h4>
               <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-blue-500 rounded-full" />
-                <span className="text-xs text-gray-600">Last 7 days</span>
+                <div className="w-2 h-2 bg-orange-500 rounded-full" />
+                <span className="text-xs text-gray-300">Last 7 days</span>
               </div>
             </div>
             <div className="flex items-end justify-between h-24">
               {chartData.map((item, index) => (
                 <div key={index} className="flex flex-col items-center">
                   <div
-                    className="w-6 bg-gradient-to-t from-blue-500 to-blue-400 rounded-t transition-all duration-1000 ease-out"
+                    className="w-6 bg-gradient-to-t from-orange-500 to-orange-400 rounded-t transition-all duration-1000 ease-out"
                     style={{
                       height: `${(item.value / 80) * 100}%`,
                       animationDelay: `${index * 100}ms`,
                     }}
                   />
-                  <span className="text-xs text-gray-500 mt-2">
+                  <span className="text-xs text-gray-300 mt-2">
                     {item.name}
                   </span>
                 </div>
@@ -172,7 +172,7 @@ export default function DashboardMockup() {
 
           {/* Recent Activity */}
           <div className="mt-4 space-y-2">
-            <h4 className="font-semibold text-gray-900 mb-3">
+            <h4 className="font-semibold text-white mb-3">
               Recent Activity
             </h4>
             {[

@@ -45,9 +45,9 @@ export default function DetailedFeatures() {
       icon: Search,
       title: "AI Visibility",
       shortDesc: "Track citations across AI platforms",
-      color: "blue",
-      gradient: "from-blue-500 to-blue-600",
-      bgGradient: "from-blue-50 to-blue-100",
+      color: "orange",
+      gradient: "from-orange-500 to-orange-600",
+      bgGradient: "from-orange-500/10 to-orange-600/10",
       metrics: ["12+", "99.2%", "<5min"],
       labels: ["Platforms", "Accuracy", "Speed"],
     },
@@ -56,9 +56,9 @@ export default function DetailedFeatures() {
       icon: TrendingUp,
       title: "Content Optimization",
       shortDesc: "AI-powered recommendations",
-      color: "purple",
-      gradient: "from-purple-500 to-purple-600",
-      bgGradient: "from-purple-50 to-purple-100",
+      color: "orange",
+      gradient: "from-orange-400 to-orange-500",
+      bgGradient: "from-orange-400/10 to-orange-500/10",
       metrics: ["50+", "85%", "+40%"],
       labels: ["Suggestions", "Success", "Improvement"],
     },
@@ -67,9 +67,9 @@ export default function DetailedFeatures() {
       icon: Shield,
       title: "Brand Protection",
       shortDesc: "Real-time alerts & monitoring",
-      color: "red",
-      gradient: "from-red-500 to-red-600",
-      bgGradient: "from-red-50 to-red-100",
+      color: "orange",
+      gradient: "from-orange-600 to-orange-700",
+      bgGradient: "from-orange-600/10 to-orange-700/10",
       metrics: ["98%", "<2min", "99.5%"],
       labels: ["Resolved", "Response", "Accuracy"],
     },
@@ -78,9 +78,9 @@ export default function DetailedFeatures() {
       icon: BarChart3,
       title: "Analytics Dashboard",
       shortDesc: "Comprehensive insights",
-      color: "green",
-      gradient: "from-green-500 to-green-600",
-      bgGradient: "from-green-50 to-green-100",
+      color: "orange",
+      gradient: "from-orange-300 to-orange-400",
+      bgGradient: "from-orange-300/10 to-orange-400/10",
       metrics: ["10M+", "99.8%", "Live"],
       labels: ["Data Points", "Accuracy", "Updates"],
     },
@@ -103,7 +103,7 @@ export default function DetailedFeatures() {
       {/* Animated Background Elements */}
       <div className="absolute inset-0 pointer-events-none">
         <div
-          className="absolute w-96 h-96 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full blur-3xl animate-pulse"
+          className="absolute w-96 h-96 bg-gradient-to-r from-orange-400/20 to-orange-500/20 rounded-full blur-3xl animate-pulse"
           style={{
             left: `${mousePosition.x * 0.02}px`,
             top: `${mousePosition.y * 0.02}px`,
@@ -111,7 +111,7 @@ export default function DetailedFeatures() {
           }}
         />
         <div
-          className="absolute w-64 h-64 bg-gradient-to-r from-pink-400/20 to-red-400/20 rounded-full blur-3xl animate-pulse"
+          className="absolute w-64 h-64 bg-gradient-to-r from-orange-500/20 to-orange-600/20 rounded-full blur-3xl animate-pulse"
           style={{
             right: `${mousePosition.x * 0.01}px`,
             bottom: `${mousePosition.y * 0.01}px`,
@@ -123,19 +123,19 @@ export default function DetailedFeatures() {
 
       {/* Header */}
       <div className="text-center mb-20 relative z-10">
-        <div className="inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 mb-8 animate-bounce">
-          <Sparkles className="w-5 h-5 text-blue-600 mr-3 animate-spin" />
-          <span className="text-base font-medium text-blue-800">
+        <div className="inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-orange-500/20 to-orange-600/20 border border-orange-500/30 mb-8 animate-bounce">
+          <Sparkles className="w-5 h-5 text-orange-400 mr-3 animate-spin" />
+          <span className="text-base font-medium text-orange-300">
             GEO Search Features
           </span>
         </div>
-        <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 animate-fade-in">
+        <h2 className="text-5xl md:text-6xl font-bold text-white mb-6 animate-fade-in">
           Everything You Need for{" "}
-          <span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent animate-gradient">
+          <span className="bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent animate-gradient">
             GEO Success
           </span>
         </h2>
-        <p className="text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed animate-slide-up">
+        <p className="text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed animate-slide-up">
           Monitor, optimize, and protect your brand across all major AI search
           engines.
         </p>
@@ -143,20 +143,20 @@ export default function DetailedFeatures() {
 
       {/* AI Platforms Section */}
       <div className="text-center mb-16 relative z-10">
-        <p className="text-lg text-gray-600 mb-8 animate-fade-in">
+        <p className="text-lg text-gray-300 mb-8 animate-fade-in">
           GEO Search supports today's top AI platforms — and tomorrow's.
         </p>
         <div className="flex flex-wrap justify-center items-center gap-6">
           {aiPlatforms.map((platform, index) => (
             <div
               key={index}
-              className="group flex items-center space-x-3 px-6 py-3 rounded-full bg-white/80 backdrop-blur-sm border border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-300 hover:scale-110 animate-float"
+              className="group flex items-center space-x-3 px-6 py-3 rounded-full bg-gray-800/80 backdrop-blur-sm border border-gray-600 hover:border-orange-500 hover:shadow-lg transition-all duration-300 hover:scale-110 animate-float"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-sm">
+              <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-sm">
                 <AIPlatformLogo platform={platform.name} size={20} />
               </div>
-              <span className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-300">
+              <span className="text-sm font-medium text-gray-300 group-hover:text-orange-400 transition-colors duration-300">
                 {platform.name}
               </span>
             </div>
@@ -167,20 +167,20 @@ export default function DetailedFeatures() {
       {/* Central Animated Element */}
       <div className="flex justify-center mb-16 relative z-10">
         <div className="relative">
-          <div className="w-40 h-40 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-2xl animate-pulse-glow">
+          <div className="w-40 h-40 bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700 rounded-full flex items-center justify-center shadow-2xl animate-pulse-glow">
             {React.createElement(features[activeFeature].icon, {
               className: "w-20 h-20 text-white animate-spin-slow",
             })}
           </div>
           {/* Floating particles */}
-          <div className="absolute -top-6 -right-6 w-6 h-6 bg-blue-400 rounded-full animate-bounce" />
+          <div className="absolute -top-6 -right-6 w-6 h-6 bg-orange-400 rounded-full animate-bounce" />
           <div
-            className="absolute -bottom-6 -left-6 w-4 h-4 bg-purple-400 rounded-full animate-bounce"
+            className="absolute -bottom-6 -left-6 w-4 h-4 bg-orange-500 rounded-full animate-bounce"
             style={{ animationDelay: "0.5s" }}
           />
-          <div className="absolute top-1/2 -left-10 w-3 h-3 bg-pink-400 rounded-full animate-ping" />
+          <div className="absolute top-1/2 -left-10 w-3 h-3 bg-orange-600 rounded-full animate-ping" />
           <div
-            className="absolute top-1/2 -right-10 w-3 h-3 bg-green-400 rounded-full animate-ping"
+            className="absolute top-1/2 -right-10 w-3 h-3 bg-orange-300 rounded-full animate-ping"
             style={{ animationDelay: "1s" }}
           />
         </div>
@@ -211,13 +211,13 @@ export default function DetailedFeatures() {
           >
             {/* Card */}
             <div
-              className={`relative bg-gradient-to-br ${feature.bgGradient} rounded-3xl p-8 border-2 border-white/50 hover:border-${feature.color}-300 hover:shadow-2xl transition-all duration-500 overflow-hidden backdrop-blur-sm`}
+              className={`relative bg-gradient-to-br ${feature.bgGradient} rounded-3xl p-8 border-2 border-gray-600/50 hover:border-orange-500/50 hover:shadow-2xl transition-all duration-500 overflow-hidden backdrop-blur-sm`}
             >
               {/* Animated background elements */}
               <div className="absolute inset-0 opacity-30">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-white rounded-full blur-xl animate-float" />
+                <div className="absolute top-0 right-0 w-24 h-24 bg-orange-500/20 rounded-full blur-xl animate-float" />
                 <div
-                  className="absolute bottom-0 left-0 w-20 h-20 bg-white rounded-full blur-xl animate-float"
+                  className="absolute bottom-0 left-0 w-20 h-20 bg-orange-400/20 rounded-full blur-xl animate-float"
                   style={{ animationDelay: "1s" }}
                 />
               </div>
@@ -232,12 +232,12 @@ export default function DetailedFeatures() {
               </div>
 
               {/* Title */}
-              <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors duration-300 text-left">
+              <h3 className="text-xl font-bold text-white mb-3 group-hover:text-orange-400 transition-colors duration-300 text-left">
                 {feature.title}
               </h3>
 
               {/* Short Description */}
-              <p className="text-gray-700 mb-6 text-sm leading-relaxed font-medium text-left">
+              <p className="text-gray-300 mb-6 text-sm leading-relaxed font-medium text-left">
                 {feature.shortDesc}
               </p>
 
@@ -246,15 +246,11 @@ export default function DetailedFeatures() {
                 {feature.metrics.map((metric, metricIndex) => (
                   <div key={metricIndex} className="text-center group/metric">
                     <div
-                      className={`text-2xl font-bold ${
-                        feature.color === "purple"
-                          ? "text-purple-600"
-                          : `text-${feature.color}-600`
-                      } mb-1 group-hover/metric:scale-110 transition-transform duration-300`}
+                      className={`text-2xl font-bold text-orange-400 mb-1 group-hover/metric:scale-110 transition-transform duration-300`}
                     >
                       {metric}
                     </div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-gray-400">
                       {feature.labels[metricIndex]}
                     </div>
                   </div>
@@ -267,8 +263,8 @@ export default function DetailedFeatures() {
               />
 
               {/* Floating elements */}
-              <div className="absolute -top-2 -right-2 w-4 h-4 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full animate-ping" />
-              <div className="absolute -bottom-1 -left-1 w-3 h-3 bg-gradient-to-r from-pink-400 to-purple-400 rounded-full animate-pulse" />
+              <div className="absolute -top-2 -right-2 w-4 h-4 bg-gradient-to-r from-orange-400 to-orange-500 rounded-full animate-ping" />
+              <div className="absolute -bottom-1 -left-1 w-3 h-3 bg-gradient-to-r from-orange-500 to-orange-600 rounded-full animate-pulse" />
             </div>
           </div>
         ))}
@@ -276,22 +272,22 @@ export default function DetailedFeatures() {
 
       {/* Bottom CTA */}
       <div className="text-center relative z-10">
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-3xl p-12 backdrop-blur-sm border border-white/50">
-          <h3 className="text-3xl font-bold text-gray-900 mb-4 animate-fade-in">
+        <div className="bg-gradient-to-r from-orange-500/10 to-orange-600/10 rounded-3xl p-12 backdrop-blur-sm border border-orange-500/30">
+          <h3 className="text-3xl font-bold text-white mb-4 animate-fade-in">
             Ready to optimize your AI visibility?
           </h3>
-          <p className="text-gray-600 mb-8 animate-slide-up">
+          <p className="text-gray-300 mb-8 animate-slide-up">
             Join thousands of brands already using GEO Search to monitor and
             improve their AI engine presence.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="group relative px-12 py-4 text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-full hover:shadow-2xl transition-all duration-300 transform hover:scale-105 overflow-hidden animate-bounce-in flex items-center justify-center">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-700 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full" />
+            <button className="group relative px-12 py-4 text-lg font-semibold text-white bg-gradient-to-r from-orange-500 to-orange-600 rounded-full hover:shadow-2xl transition-all duration-300 transform hover:scale-105 overflow-hidden animate-bounce-in flex items-center justify-center">
+              <div className="absolute inset-0 bg-gradient-to-r from-orange-600 to-orange-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full" />
               <span className="relative z-10">Start Free Trial</span>
               <ArrowRight className="w-5 h-5 ml-2 relative z-10 group-hover:translate-x-1 transition-transform duration-300" />
             </button>
             <button
-              className="px-10 py-5 text-lg font-semibold text-gray-700 bg-white border-2 border-gray-200 rounded-full hover:border-blue-300 hover:shadow-lg transition-all duration-300 transform hover:scale-105 animate-bounce-in"
+              className="px-10 py-5 text-lg font-semibold text-gray-300 bg-gray-800 border-2 border-gray-600 rounded-full hover:border-orange-500 hover:shadow-lg transition-all duration-300 transform hover:scale-105 animate-bounce-in"
               style={{ animationDelay: "0.1s" }}
             >
               View Pricing
@@ -301,17 +297,17 @@ export default function DetailedFeatures() {
       </div>
 
       {/* Additional Floating Elements */}
-      <div className="absolute top-20 left-10 w-2 h-2 bg-blue-400 rounded-full animate-ping" />
+      <div className="absolute top-20 left-10 w-2 h-2 bg-orange-400 rounded-full animate-ping" />
       <div
-        className="absolute top-40 right-20 w-3 h-3 bg-purple-400 rounded-full animate-ping"
+        className="absolute top-40 right-20 w-3 h-3 bg-orange-500 rounded-full animate-ping"
         style={{ animationDelay: "2s" }}
       />
       <div
-        className="absolute bottom-20 left-1/4 w-2 h-2 bg-pink-400 rounded-full animate-ping"
+        className="absolute bottom-20 left-1/4 w-2 h-2 bg-orange-600 rounded-full animate-ping"
         style={{ animationDelay: "4s" }}
       />
       <div
-        className="absolute bottom-40 right-1/3 w-3 h-3 bg-green-400 rounded-full animate-ping"
+        className="absolute bottom-40 right-1/3 w-3 h-3 bg-orange-300 rounded-full animate-ping"
         style={{ animationDelay: "6s" }}
       />
     </div>

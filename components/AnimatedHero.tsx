@@ -37,13 +37,13 @@ export default function AnimatedHero() {
     <section className="relative px-6 py-20 overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full blur-xl animate-float" />
+        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-orange-400/20 to-orange-500/20 rounded-full blur-xl animate-float" />
         <div
-          className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-r from-pink-400/20 to-red-400/20 rounded-full blur-xl animate-float"
+          className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-r from-orange-500/20 to-orange-600/20 rounded-full blur-xl animate-float"
           style={{ animationDelay: "1s" }}
         />
         <div
-          className="absolute bottom-20 left-1/4 w-40 h-40 bg-gradient-to-r from-green-400/20 to-blue-400/20 rounded-full blur-xl animate-float"
+          className="absolute bottom-20 left-1/4 w-40 h-40 bg-gradient-to-r from-orange-300/20 to-orange-400/20 rounded-full blur-xl animate-float"
           style={{ animationDelay: "2s" }}
         />
       </div>
@@ -57,7 +57,7 @@ export default function AnimatedHero() {
                 : "translate-y-8 opacity-0"
             }`}
           >
-            <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 mb-6 hover:shadow-lg transition-all duration-300 group">
+            <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gradient-to-r from-orange-500/20 to-orange-600/20 border border-orange-500/30 text-orange-300 mb-6 hover:shadow-lg transition-all duration-300 group">
               <Star className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform duration-300" />
               Trusted by 500+ companies worldwide
               <Sparkles className="w-4 h-4 ml-2 animate-pulse" />
@@ -71,9 +71,9 @@ export default function AnimatedHero() {
                 : "translate-y-8 opacity-0"
             }`}
           >
-            <h1 className="text-6xl md:text-8xl font-bold text-gray-900 mb-8 leading-tight">
+            <h1 className="text-6xl md:text-8xl font-bold text-white mb-8 leading-tight">
               Monitor Your Brand's
-              <span className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-pulse">
+              <span className="bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 bg-clip-text text-transparent animate-pulse">
                 {" "}
                 AI Visibility
               </span>
@@ -87,7 +87,7 @@ export default function AnimatedHero() {
                 : "translate-y-8 opacity-0"
             }`}
           >
-            <p className="text-2xl text-gray-600 mb-10 max-w-4xl mx-auto leading-relaxed">
+            <p className="text-2xl text-gray-300 mb-10 max-w-4xl mx-auto leading-relaxed">
               Track citations, optimize content, and protect your brand across
               AI search engines. Get actionable insights to improve your
               Generative Engine Optimization (GEO) strategy.
@@ -102,11 +102,11 @@ export default function AnimatedHero() {
         >
           <Link
             href="/dashboard"
-            className="group relative inline-flex items-center justify-center px-10 py-5 text-xl font-semibold text-white bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full hover:shadow-2xl transition-all duration-300 transform hover:scale-105 overflow-hidden"
+            className="group relative inline-flex items-center justify-center px-10 py-5 text-xl font-semibold text-white bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700 rounded-full hover:shadow-2xl transition-all duration-300 transform hover:scale-105 overflow-hidden"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute inset-0 bg-gradient-to-r from-orange-600 via-orange-700 to-orange-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <div className="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
             <Play className="w-6 h-6 mr-3 transition-transform duration-300 group-hover:scale-110 relative z-10" />
             <span className="relative z-10">Try Playground</span>
@@ -117,8 +117,8 @@ export default function AnimatedHero() {
             />
           </Link>
 
-          <button className="group relative px-10 py-5 text-xl font-semibold text-gray-700 bg-white/80 backdrop-blur-sm rounded-full border-2 border-gray-200 hover:border-blue-300 hover:bg-white transition-all duration-300 transform hover:scale-105 overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <button className="group relative px-10 py-5 text-xl font-semibold text-gray-300 bg-gray-800/80 backdrop-blur-sm rounded-full border-2 border-gray-600 hover:border-orange-500 hover:bg-gray-700 transition-all duration-300 transform hover:scale-105 overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-orange-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <span className="relative z-10 flex items-center">
               <Sparkles className="w-5 h-5 mr-3 group-hover:rotate-12 transition-transform duration-300" />
               Watch Demo
@@ -144,13 +144,13 @@ export default function AnimatedHero() {
                 <div
                   className={`text-4xl font-bold mb-2 transition-colors duration-300 ${
                     activeStat === index
-                      ? "text-blue-600"
-                      : "text-gray-900 group-hover:text-blue-600"
+                      ? "text-orange-500"
+                      : "text-white group-hover:text-orange-400"
                   }`}
                 >
                   {stat.value}
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 opacity-0 group-hover:opacity-10 rounded-lg blur-sm transition-opacity duration-300" />
+                <div className="absolute inset-0 bg-gradient-to-r from-orange-500 to-orange-600 opacity-0 group-hover:opacity-10 rounded-lg blur-sm transition-opacity duration-300" />
                 <div
                   className={`absolute -top-2 -right-2 transition-all duration-300 ${
                     activeStat === index
@@ -158,10 +158,10 @@ export default function AnimatedHero() {
                       : "opacity-0 scale-0"
                   }`}
                 >
-                  <stat.icon className="w-6 h-6 text-blue-500 animate-bounce" />
+                  <stat.icon className="w-6 h-6 text-orange-500 animate-bounce" />
                 </div>
               </div>
-              <div className="text-lg text-gray-600 group-hover:text-gray-800 transition-colors duration-300">
+              <div className="text-lg text-gray-300 group-hover:text-white transition-colors duration-300">
                 {stat.label}
               </div>
             </div>

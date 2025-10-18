@@ -54,19 +54,19 @@ export default function FAQ() {
     <div className="w-full max-w-[1400px] mx-auto px-4">
       {/* Header */}
       <div className="text-center mb-16">
-        <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 mb-6">
-          <HelpCircle className="w-4 h-4 text-blue-600 mr-2" />
-          <span className="text-sm font-medium text-blue-800">
+        <div className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-orange-500/20 to-orange-600/20 border border-orange-500/30 mb-6">
+          <HelpCircle className="w-4 h-4 text-orange-400 mr-2" />
+          <span className="text-sm font-medium text-orange-300">
             Frequently Asked Questions
           </span>
         </div>
-        <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+        <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
           Got{" "}
-          <span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-orange-400 to-orange-500 bg-clip-text text-transparent">
             Questions?
           </span>
         </h2>
-        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+        <p className="text-xl text-gray-300 max-w-2xl mx-auto">
           Find answers to common questions about GEO, our platform, and how to
           get started.
         </p>
@@ -77,23 +77,23 @@ export default function FAQ() {
         {faqs.map((faq, index) => (
           <div
             key={index}
-            className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
+            className="bg-gray-800 rounded-2xl border border-gray-600 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
           >
             <button
               onClick={() => setOpenIndex(openIndex === index ? null : index)}
-              className="w-full px-8 py-6 text-left flex items-center justify-between hover:bg-gray-50 transition-colors duration-200"
+              className="w-full px-8 py-6 text-left flex items-center justify-between hover:bg-gray-700 transition-colors duration-200"
             >
-              <h3 className="text-lg font-semibold text-gray-900 pr-4">
+              <h3 className="text-lg font-semibold text-white pr-4">
                 {faq.question}
               </h3>
               <div className="flex-shrink-0">
                 {openIndex === index ? (
-                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                    <Minus className="w-4 h-4 text-blue-600" />
+                  <div className="w-8 h-8 bg-orange-500/20 rounded-full flex items-center justify-center">
+                    <Minus className="w-4 h-4 text-orange-400" />
                   </div>
                 ) : (
-                  <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                    <Plus className="w-4 h-4 text-gray-600" />
+                  <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
+                    <Plus className="w-4 h-4 text-gray-300" />
                   </div>
                 )}
               </div>
@@ -101,8 +101,8 @@ export default function FAQ() {
 
             {openIndex === index && (
               <div className="px-8 pb-6">
-                <div className="border-t border-gray-100 pt-4">
-                  <p className="text-gray-600 leading-relaxed">{faq.answer}</p>
+                <div className="border-t border-gray-600 pt-4">
+                  <p className="text-gray-300 leading-relaxed">{faq.answer}</p>
                 </div>
               </div>
             )}
@@ -112,19 +112,19 @@ export default function FAQ() {
 
       {/* Bottom CTA */}
       <div className="text-center mt-16">
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8">
-          <h3 className="text-2xl font-bold text-gray-900 mb-4">
+        <div className="bg-gradient-to-r from-orange-500/10 to-orange-600/10 rounded-2xl p-8 border border-orange-500/30">
+          <h3 className="text-2xl font-bold text-white mb-4">
             Still have questions?
           </h3>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-300 mb-6">
             Our team is here to help you get the most out of GEO Search
             Platform.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors">
+            <button className="px-6 py-3 bg-orange-500 text-white rounded-xl font-semibold hover:bg-orange-600 transition-colors">
               Contact Support
             </button>
-            <button className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-colors">
+            <button className="px-6 py-3 border border-gray-600 text-gray-300 rounded-xl font-semibold hover:bg-gray-700 transition-colors">
               Schedule Demo
             </button>
           </div>
