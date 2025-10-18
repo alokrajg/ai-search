@@ -62,41 +62,36 @@ export default function VisibilityMetricsComponent({
       0
     );
 
-    const totalQueries = 22; // Updated to match real query count
+    // Get real query count from the data
+    const totalQueries =
+      brands.length > 0
+        ? brands.reduce((sum, brand) => {
+            const brandData = visibilityData.find(
+              (_, index) => brands[index]?.id === brand.id
+            );
+            return sum + (brandData?.queries_count || 0);
+          }, 0)
+        : 0;
+
     const zudioData = visibilityData.find(
       (_, index) => brands[index]?.name.toLowerCase() === "zudio"
     );
 
-    // Calculate real metrics from actual data
+    // Use real metrics from API (realMetrics) or fallback to calculated values
     const metrics = {
       brandVisibilityScore: zudioData ? zudioData.visibility_score * 100 : 0,
       totalCitationsCount: zudioData?.citations_count || 0,
-      queryCoverage: zudioData
-        ? Math.round((zudioData.citations_count / totalQueries) * 100)
-        : 0,
-      visibilityRank: 1, // Zudio is #1 based on current data
+      queryCoverage:
+        zudioData && totalQueries > 0
+          ? Math.round((zudioData.citations_count / totalQueries) * 100)
+          : 0,
+      visibilityRank: 0, // Will be calculated from real competitor data when available
       engineBreakdown: zudioData?.engine_breakdown || {},
-      visibilityTrend: 0, // Will be calculated from real data
+      visibilityTrend: 0, // This will come from real historical data
       topCitedPages: zudioData?.top_pages || [],
-      topPerformingQueries: [
-        {
-          query: "trendy clothing brands in India",
-          citations: Math.floor((zudioData?.citations_count || 0) * 0.3),
-          trend: 15.2,
-        },
-        {
-          query: "affordable fashion for young adults",
-          citations: Math.floor((zudioData?.citations_count || 0) * 0.25),
-          trend: 8.7,
-        },
-        {
-          query: "best budget fashion stores online",
-          citations: Math.floor((zudioData?.citations_count || 0) * 0.2),
-          trend: -2.1,
-        },
-      ],
-      averageCitationConfidence: 87.3,
-      correctCitationRatio: 94.2,
+      topPerformingQueries: [], // This will come from real API data
+      averageCitationConfidence: 0, // This will come from real citation analysis
+      correctCitationRatio: 0, // This will come from real citation analysis
     };
 
     return metrics;

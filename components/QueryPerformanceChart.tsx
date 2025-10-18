@@ -27,35 +27,8 @@ export default function QueryPerformanceChart({
   const sortedQueries = [...queries].sort((a, b) => b.citations - a.citations);
   const displayQueries = showAll ? sortedQueries : sortedQueries.slice(0, 10);
 
-  // Fallback data if no queries are provided
-  const fallbackData = [
-    {
-      query: "trendy clothing brands in India",
-      citations: 5,
-      trend: "up",
-      category: "brand-info",
-      engines: ["perplexity"],
-      citationShare: 23.8,
-    },
-    {
-      query: "affordable fashion for young adults",
-      citations: 4,
-      trend: "up",
-      category: "product-help",
-      engines: ["perplexity", "chatgpt"],
-      citationShare: 19.0,
-    },
-    {
-      query: "best budget fashion stores online",
-      citations: 3,
-      trend: "down",
-      category: "product-help",
-      engines: ["perplexity", "chatgpt"],
-      citationShare: 14.3,
-    },
-  ];
-
-  const finalQueries = queries.length > 0 ? queries : fallbackData;
+  // Use only real data from queries prop
+  const finalQueries = queries;
   const finalSortedQueries = [...finalQueries].sort(
     (a, b) => b.citations - a.citations
   );

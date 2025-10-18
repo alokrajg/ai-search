@@ -63,7 +63,10 @@ backend/
 
 - Python 3.8+
 - Google Cloud Project with Firestore enabled
-- Perplexity API key
+- AI Engine API keys (at least one):
+  - Perplexity API key
+  - OpenAI API key (for ChatGPT)
+  - Google AI API key (for Gemini)
 
 ### 2. Installation
 
@@ -86,9 +89,14 @@ nano .env
 Edit `.env` file with your settings:
 
 ```env
-# Required
+# Required API Keys (at least one)
 PERPLEXITY_API_KEY=your_perplexity_api_key_here
+OPENAI_API_KEY=your_openai_api_key_here
+GOOGLE_AI_API_KEY=your_google_ai_api_key_here
+
+# Google Cloud Configuration
 GOOGLE_CLOUD_PROJECT=your-gcp-project-id
+GOOGLE_APPLICATION_CREDENTIALS=path/to/your/service-account-key.json
 
 # Optional (for local development)
 FIRESTORE_EMULATOR_HOST=localhost:8080
@@ -113,6 +121,35 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 The API will be available at `http://localhost:8000`
+
+## 🤖 Multi-Engine AI Support
+
+The platform now supports multiple AI engines for comprehensive search coverage:
+
+### Supported Engines
+
+- **Perplexity AI**: Real-time web search with citations
+- **ChatGPT (OpenAI)**: Advanced reasoning and analysis
+- **Google AI (Gemini)**: Google's latest AI model
+
+### Usage
+
+Specify multiple engines in your CSV queries:
+
+```csv
+brand_name,text,category,engine_targets,active
+Zudio,"affordable fashion for young adults",product-help,"perplexity,chatgpt,google_ai",true
+```
+
+### Testing
+
+Test all engines with:
+
+```bash
+python test_new_clients.py
+```
+
+For detailed setup instructions, see [MULTI_ENGINE_SETUP.md](MULTI_ENGINE_SETUP.md)
 
 ## 📚 API Documentation
 

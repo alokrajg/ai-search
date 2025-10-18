@@ -232,11 +232,9 @@ export default function OverviewDashboard({
                 </div>
               </div>
               <div className="flex items-center mt-2">
-                <ArrowUpRight className="w-4 h-4 text-green-500 mr-1 group-hover:scale-110 transition-transform duration-300" />
-                <span className="text-sm text-green-600 font-medium">
-                  +12.5%
+                <span className="text-sm text-gray-500">
+                  No historical data available
                 </span>
-                <span className="text-sm text-gray-500 ml-1">vs last week</span>
               </div>
             </div>
 
@@ -303,11 +301,9 @@ export default function OverviewDashboard({
                 </div>
               </div>
               <div className="flex items-center mt-2">
-                <ArrowUpRight className="w-4 h-4 text-green-500 mr-1 group-hover:scale-110 transition-transform duration-300" />
-                <span className="text-sm text-green-600 font-medium">
-                  +2.1%
+                <span className="text-sm text-gray-500">
+                  No historical data available
                 </span>
-                <span className="text-sm text-gray-500 ml-1">vs last week</span>
               </div>
             </div>
           </div>

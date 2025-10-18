@@ -103,59 +103,9 @@ export default function CSVMetricsVisualization({
         console.error("Error fetching performance data:", err);
         setError(err instanceof Error ? err.message : "Failed to fetch data");
 
-        // Fallback to mock data if API fails
-        setData([
-          {
-            queryId: "4eJxbZb9a2uVgN96lSLQ",
-            queryText: "trendy clothing brands in India",
-            category: "brand-info",
-            engineTargets: ["perplexity"],
-            active: true,
-            createdAt: "",
-            realCitations: 5,
-            citationShare: 23.8,
-          },
-          {
-            queryId: "69Q8hJ8qzZeS9QgPrRHJ",
-            queryText: "affordable ethnic wear for young people",
-            category: "product-help",
-            engineTargets: ["perplexity", "chatgpt"],
-            active: true,
-            createdAt: "",
-            realCitations: 4,
-            citationShare: 19.0,
-          },
-          {
-            queryId: "6ucg5fQBDGANVzr044su",
-            queryText: "youth fashion brands in India",
-            category: "brand-info",
-            engineTargets: ["perplexity", "chatgpt"],
-            active: true,
-            createdAt: "",
-            realCitations: 3,
-            citationShare: 14.3,
-          },
-          {
-            queryId: "ABd51zjSoKn5E1D6hLCA",
-            queryText: "fashion brands for college students",
-            category: "product-help",
-            engineTargets: ["perplexity", "chatgpt"],
-            active: true,
-            createdAt: "",
-            realCitations: 2,
-            citationShare: 9.5,
-          },
-          {
-            queryId: "AHAYM6hNkc6Iv6ettj14",
-            queryText: "cheap trendy dresses online",
-            category: "product-help",
-            engineTargets: ["perplexity", "chatgpt"],
-            active: true,
-            createdAt: "",
-            realCitations: 2,
-            citationShare: 9.5,
-          },
-        ]);
+        // Set empty data if API fails instead of mock data
+        setData([]);
+        setPerformanceData(null);
       } finally {
         setLoading(false);
       }
@@ -457,20 +407,35 @@ export default function CSVMetricsVisualization({
           </div>
         </div>
 
-        {/* Engine Distribution */}
+        {/* Engine Target Distribution */}
         <div className="bg-gray-700 rounded-2xl p-8 border border-gray-600">
           <h3 className="text-xl font-semibold text-white mb-6">
             Engine Target Distribution
           </h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={engineChartData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#4B5563" />
-                <XAxis dataKey="name" stroke="#9CA3AF" />
-                <YAxis stroke="#9CA3AF" />
+              <PieChart>
+                <Pie
+                  data={engineChartData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) =>
+                    `${name} ${(percent * 100).toFixed(0)}%`
+                  }
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                >
+                  {engineChartData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Pie>
                 <Tooltip content={<CustomTooltip />} />
-                <Bar dataKey="value" fill="#F97316" radius={[4, 4, 0, 0]} />
-              </BarChart>
+              </PieChart>
             </ResponsiveContainer>
           </div>
         </div>
@@ -522,49 +487,6 @@ export default function CSVMetricsVisualization({
               </div>
             </div>
           ))}
-        </div>
-      </div>
-
-      {/* Category Performance Analysis */}
-      <div className="bg-gray-700 rounded-2xl p-8 border border-gray-600">
-        <h3 className="text-xl font-semibold text-white mb-6">
-          Category Performance Analysis
-        </h3>
-        <div className="h-64">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={categoryPerformanceData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#4B5563" />
-              <XAxis dataKey="category" stroke="#9CA3AF" />
-              <YAxis stroke="#9CA3AF" />
-              <Tooltip
-                content={({ active, payload, label }) => {
-                  if (active && payload && payload.length) {
-                    const data = payload[0].payload;
-                    return (
-                      <div className="bg-gray-800 border border-gray-600 rounded-lg p-3 shadow-xl">
-                        <p className="text-white font-semibold">{label}</p>
-                        <p className="text-orange-400">
-                          Total Citations: {data.totalCitations}
-                        </p>
-                        <p className="text-gray-300">
-                          Avg per Query: {data.avgCitations}
-                        </p>
-                        <p className="text-gray-300">
-                          Queries: {data.queryCount}
-                        </p>
-                      </div>
-                    );
-                  }
-                  return null;
-                }}
-              />
-              <Bar
-                dataKey="totalCitations"
-                fill="#F97316"
-                radius={[4, 4, 0, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
         </div>
       </div>
     </div>

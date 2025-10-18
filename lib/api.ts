@@ -229,39 +229,28 @@ class ApiService {
   // Dashboard metrics
   async getDashboardMetrics(brandId: string): Promise<any> {
     try {
-      return await this.request<any>(`/dashboard/metrics/${brandId}`);
+      return await this.request<any>(`/dashboard/dashboard/metrics/${brandId}`);
     } catch (error) {
       console.error("Error fetching dashboard metrics:", error);
-      // Return fallback data with real values from your database
+      // Return empty data structure instead of hardcoded values
       return {
-        brandVisibilityScore: 79.96,
-        totalCitationsCount: 21,
-        queryCoverage: 95,
-        visibilityRank: 1,
-        engineBreakdown: { chatgpt: 15, perplexity: 6 },
+        brandVisibilityScore: 0,
+        totalCitationsCount: 0,
+        queryCoverage: 0,
+        visibilityRank: 0,
+        engineBreakdown: {},
         visibilityTrend: 0,
         topCitedPages: [],
-        topPerformingQueries: [
-          {
-            query: "trendy clothing brands in India",
-            citations: 5,
-            trend: 15.2,
-          },
-          {
-            query: "affordable fashion for young adults",
-            citations: 4,
-            trend: 8.7,
-          },
-          {
-            query: "best budget fashion stores online",
-            citations: 3,
-            trend: -2.1,
-          },
-        ],
-        averageCitationConfidence: 87.3,
-        correctCitationRatio: 94.2,
-        confidenceTrend: 2.3,
-        accuracyTrend: 1.8,
+        topPerformingQueries: [],
+        averageCitationConfidence: 0,
+        correctCitationRatio: 0,
+        confidenceTrend: 0,
+        accuracyTrend: 0,
+        totalQueries: 0,
+        activeQueries: 0,
+        uniquePages: 0,
+        lastUpdated: new Date().toISOString().split("T")[0],
+        visibilityTrendData: [{ day: "No Data", visibility: 0 }],
       };
     }
   }

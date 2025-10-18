@@ -70,14 +70,9 @@ export default function MetricsBreakdown({ metrics }: MetricsBreakdownProps) {
 
   console.log("MetricsBreakdown - queryPerformanceData:", queryPerformanceData);
 
-  const trendData = [
-    { day: "Day 1", visibility: 75 },
-    { day: "Day 2", visibility: 78 },
-    { day: "Day 3", visibility: 82 },
-    { day: "Day 4", visibility: 85 },
-    { day: "Day 5", visibility: 88 },
-    { day: "Day 6", visibility: 90 },
-    { day: "Day 7", visibility: 92 },
+  // Use real trend data from backend
+  const trendData = metrics.visibilityTrendData || [
+    { day: "No Data", visibility: 0 },
   ];
 
   return (
@@ -88,42 +83,9 @@ export default function MetricsBreakdown({ metrics }: MetricsBreakdownProps) {
         title="Top Queries Performance"
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Engine Distribution Chart */}
-        <div className="bg-gray-700 rounded-2xl p-8 border border-gray-600">
-          <h3 className="text-xl font-semibold text-white mb-6">
-            Engine Distribution
-          </h3>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={engineData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, percent }) =>
-                    `${name} ${(percent * 100).toFixed(0)}%`
-                  }
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
-                  {engineData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Visibility Trend */}
-        <div className="bg-gray-700 rounded-2xl p-8 border border-gray-600">
+        <div className="lg:col-span-2 bg-gray-700 rounded-2xl p-8 border border-gray-600">
           <h3 className="text-xl font-semibold text-white mb-6">
             Visibility Trend (7 Days)
           </h3>
@@ -149,71 +111,97 @@ export default function MetricsBreakdown({ metrics }: MetricsBreakdownProps) {
             </ResponsiveContainer>
           </div>
         </div>
-      </div>
 
-      {/* Citation Quality Metrics */}
-      <div className="bg-gray-700 rounded-2xl p-8 border border-gray-600">
-        <h3 className="text-xl font-semibold text-white mb-6">
-          Citation Quality
-        </h3>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 bg-orange-500/10 rounded-lg border border-orange-500/20">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center">
-                <Target className="w-5 h-5 text-orange-500" />
+        {/* Citation Quality Metrics - Compact */}
+        <div className="bg-gray-700 rounded-2xl p-6 border border-gray-600">
+          <h3 className="text-lg font-semibold text-white mb-4">
+            Citation Quality
+          </h3>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-3 bg-orange-500/10 rounded-lg border border-orange-500/20">
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-orange-500/20 rounded-lg flex items-center justify-center">
+                  <Target className="w-4 h-4 text-orange-500" />
+                </div>
+                <div>
+                  <h4 className="font-medium text-white text-sm">
+                    Citation Confidence
+                  </h4>
+                  <p className="text-xs text-gray-300">Detection reliability</p>
+                </div>
               </div>
-              <div>
-                <h4 className="font-medium text-white">Citation Confidence</h4>
-                <p className="text-sm text-gray-300">Detection reliability</p>
+              <div className="text-right">
+                <div className="text-lg font-bold text-orange-500">
+                  {metrics.averageCitationConfidence !== undefined
+                    ? metrics.averageCitationConfidence.toFixed(1)
+                    : "0.0"}
+                  %
+                </div>
+                <div className="flex items-center text-xs text-orange-500">
+                  <TrendingUp className="w-3 h-3 mr-1" />
+                  {metrics.confidenceTrend !== undefined &&
+                  metrics.confidenceTrend > 0
+                    ? "+"
+                    : ""}
+                  {metrics.confidenceTrend !== undefined
+                    ? metrics.confidenceTrend.toFixed(1)
+                    : "0.0"}
+                  %
+                </div>
               </div>
             </div>
-            <div className="text-right">
-              <div className="text-2xl font-bold text-orange-500">
-                {metrics.averageCitationConfidence.toFixed(1)}%
-              </div>
-              <div className="flex items-center text-sm text-orange-500">
-                <TrendingUp className="w-4 h-4 mr-1" />
-                +2.3%
-              </div>
-            </div>
-          </div>
 
-          <div className="flex items-center justify-between p-4 bg-orange-500/10 rounded-lg border border-orange-500/20">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center">
-                <Award className="w-5 h-5 text-orange-500" />
+            <div className="flex items-center justify-between p-3 bg-orange-500/10 rounded-lg border border-orange-500/20">
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-orange-500/20 rounded-lg flex items-center justify-center">
+                  <Award className="w-4 h-4 text-orange-500" />
+                </div>
+                <div>
+                  <h4 className="font-medium text-white text-sm">
+                    Citation Accuracy
+                  </h4>
+                  <p className="text-xs text-gray-300">Correct vs incorrect</p>
+                </div>
               </div>
-              <div>
-                <h4 className="font-medium text-white">Citation Accuracy</h4>
-                <p className="text-sm text-gray-300">Correct vs incorrect</p>
+              <div className="text-right">
+                <div className="text-lg font-bold text-orange-500">
+                  {metrics.correctCitationRatio !== undefined
+                    ? metrics.correctCitationRatio.toFixed(1)
+                    : "0.0"}
+                  %
+                </div>
+                <div className="flex items-center text-xs text-orange-500">
+                  <TrendingUp className="w-3 h-3 mr-1" />
+                  {metrics.accuracyTrend !== undefined &&
+                  metrics.accuracyTrend > 0
+                    ? "+"
+                    : ""}
+                  {metrics.accuracyTrend !== undefined
+                    ? metrics.accuracyTrend.toFixed(1)
+                    : "0.0"}
+                  %
+                </div>
               </div>
             </div>
-            <div className="text-right">
-              <div className="text-2xl font-bold text-orange-500">
-                {metrics.correctCitationRatio.toFixed(1)}%
-              </div>
-              <div className="flex items-center text-sm text-orange-500">
-                <TrendingUp className="w-4 h-4 mr-1" />
-                +1.8%
-              </div>
-            </div>
-          </div>
 
-          <div className="flex items-center justify-between p-4 bg-orange-500/10 rounded-lg border border-orange-500/20">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-orange-500" />
+            <div className="flex items-center justify-between p-3 bg-orange-500/10 rounded-lg border border-orange-500/20">
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-orange-500/20 rounded-lg flex items-center justify-center">
+                  <TrendingUp className="w-4 h-4 text-orange-500" />
+                </div>
+                <div>
+                  <h4 className="font-medium text-white text-sm">
+                    Market Position
+                  </h4>
+                  <p className="text-xs text-gray-300">Rank vs competitors</p>
+                </div>
               </div>
-              <div>
-                <h4 className="font-medium text-white">Market Position</h4>
-                <p className="text-sm text-gray-300">Rank vs competitors</p>
+              <div className="text-right">
+                <div className="text-lg font-bold text-orange-500">
+                  #{metrics.visibilityRank}
+                </div>
+                <div className="text-xs text-orange-500">Leading position</div>
               </div>
-            </div>
-            <div className="text-right">
-              <div className="text-2xl font-bold text-orange-500">
-                #{metrics.visibilityRank}
-              </div>
-              <div className="text-sm text-orange-500">Leading position</div>
             </div>
           </div>
         </div>

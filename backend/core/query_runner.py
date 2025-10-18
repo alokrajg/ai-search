@@ -9,6 +9,8 @@ import asyncio
 
 from .database import get_db, FirestoreHelper
 from .perplexity_client import PerplexityClient, perplexity_rate_limiter
+from .chatgpt_client import ChatGPTClient
+from .google_ai_client import GoogleAIClient
 from .citation_extractor import CitationExtractor
 from .models import RunStatus
 
@@ -21,6 +23,8 @@ class QueryRunner:
         self.db = get_db()
         self.db_helper = FirestoreHelper(self.db)
         self.perplexity_client = PerplexityClient()
+        self.chatgpt_client = ChatGPTClient()
+        self.google_ai_client = GoogleAIClient()
         self.citation_extractor = CitationExtractor()
     
     async def run_all_queries(self) -> Dict:
@@ -129,88 +133,132 @@ class QueryRunner:
             raise
     
     async def _execute_query(self, brand: Dict, query: Dict) -> Dict:
-        """Execute a single query against AI engines."""
+        """Execute a single query against multiple AI engines."""
         brand_id = brand["id"]
         query_id = query["id"]
         query_text = query["text"]
         engine_targets = query.get("engine_targets", ["perplexity"])
         
-        citations_found = 0
+        # Ensure engine_targets is a list
+        if isinstance(engine_targets, str):
+            engine_targets = [engine.strip() for engine in engine_targets.split(",")]
         
-        # Create run record
-        run_data = {
-            "brand_id": brand_id,
-            "query_id": query_id,
-            "engine": "perplexity",  # For now, only Perplexity
-            "started_at": datetime.now(),
-            "status": RunStatus.RUNNING,
-            "raw_response_ref": None
-        }
-        run_id = await self.db_helper.create_run(run_data)
+        total_citations_found = 0
+        engine_results = []
         
-        try:
-            # Apply rate limiting
-            await perplexity_rate_limiter.acquire()
+        # Execute query against each engine
+        for engine in engine_targets:
+            engine = engine.strip().lower()
             
-            # Query Perplexity
-            response_data = await self.perplexity_client.query(query_text)
-            
-            # Extract citations
-            citations = await self.citation_extractor.extract_citations(
-                response_data,
-                brand["domains"],
-                brand["canonical_pages"]
-            )
-            
-            # Store citations
-            for citation in citations:
-                citation_data = {
-                    "brand_id": brand_id,
-                    "query_id": query_id,
-                    "engine": "perplexity",
-                    "timestamp": datetime.now(),
-                    "snippet": citation.get("snippet", ""),
-                    "matched_url": citation.get("matched_url"),
-                    "matched_domain": citation.get("matched_domain"),
-                    "confidence": citation.get("confidence", 0.0),
-                    "raw_answer": response_data.get("answer", ""),
-                    "source_urls": citation.get("source_urls", []),
-                    "dedup_group_id": citation.get("dedup_group_id", ""),
-                    "metadata": {
-                        "match_type": citation.get("match_type", ""),
-                        "model": response_data.get("model", ""),
-                        "usage": response_data.get("usage", {})
-                    }
-                }
-                
-                await self.db_helper.create_citation(citation_data)
-                citations_found += 1
-            
-            # Update run record
-            await self.db_helper.update_run(run_id, {
-                "ended_at": datetime.now(),
-                "status": RunStatus.SUCCESS,
-                "raw_response_ref": f"runs/{run_id}/response.json"
-            })
-            
-            logger.info(f"Query {query_id} completed: {citations_found} citations found")
-            
-            return {
-                "run_id": run_id,
-                "citations_found": citations_found,
-                "response_data": response_data
+            # Create run record for this engine
+            run_data = {
+                "brand_id": brand_id,
+                "query_id": query_id,
+                "engine": engine,
+                "started_at": datetime.now(),
+                "status": RunStatus.RUNNING,
+                "raw_response_ref": None
             }
+            run_id = await self.db_helper.create_run(run_data)
             
-        except Exception as e:
-            # Update run record with error
-            await self.db_helper.update_run(run_id, {
-                "ended_at": datetime.now(),
-                "status": RunStatus.FAILED,
-                "error_message": str(e)
-            })
-            
-            logger.error(f"Query {query_id} failed: {e}")
-            raise
+            try:
+                # Query the appropriate engine
+                response_data = await self._query_engine(engine, query_text)
+                
+                # Extract citations
+                citations = await self.citation_extractor.extract_citations(
+                    response_data,
+                    brand["domains"],
+                    brand["canonical_pages"]
+                )
+                
+                # Store citations
+                engine_citations = 0
+                for citation in citations:
+                    citation_data = {
+                        "brand_id": brand_id,
+                        "query_id": query_id,
+                        "engine": engine,
+                        "timestamp": datetime.now(),
+                        "snippet": citation.get("snippet", ""),
+                        "matched_url": citation.get("matched_url"),
+                        "matched_domain": citation.get("matched_domain"),
+                        "confidence": citation.get("confidence", 0.0),
+                        "raw_answer": response_data.get("answer", ""),
+                        "source_urls": citation.get("source_urls", []),
+                        "dedup_group_id": citation.get("dedup_group_id", ""),
+                        "metadata": {
+                            "match_type": citation.get("match_type", ""),
+                            "model": response_data.get("metadata", {}).get("model", ""),
+                            "usage": response_data.get("metadata", {}).get("usage", {})
+                        }
+                    }
+                    
+                    await self.db_helper.create_citation(citation_data)
+                    engine_citations += 1
+                
+                # Update run record
+                await self.db_helper.update_run(run_id, {
+                    "ended_at": datetime.now(),
+                    "status": RunStatus.SUCCESS,
+                    "raw_response_ref": f"runs/{run_id}/response.json"
+                })
+                
+                engine_results.append({
+                    "engine": engine,
+                    "citations_found": engine_citations,
+                    "status": "success"
+                })
+                
+                total_citations_found += engine_citations
+                
+                logger.info(f"Query {query_id} on {engine} completed: {engine_citations} citations found")
+                
+            except Exception as e:
+                logger.error(f"Error executing query {query_id} on {engine}: {e}")
+                
+                # Update run record with error
+                await self.db_helper.update_run(run_id, {
+                    "ended_at": datetime.now(),
+                    "status": RunStatus.FAILED,
+                    "error_message": str(e)
+                })
+                
+                engine_results.append({
+                    "engine": engine,
+                    "citations_found": 0,
+                    "status": "error",
+                    "error": str(e)
+                })
+        
+        return {
+            "query_id": query_id,
+            "total_citations_found": total_citations_found,
+            "engine_results": engine_results
+        }
+    
+    async def _query_engine(self, engine: str, query_text: str) -> Dict:
+        """Query a specific AI engine."""
+        engine = engine.lower().strip()
+        
+        if engine == "perplexity":
+            # Apply rate limiting for Perplexity
+            await perplexity_rate_limiter.acquire()
+            return await self.perplexity_client.query(query_text)
+        elif engine == "chatgpt":
+            return await self.chatgpt_client.query(query_text)
+        elif engine in ["google_ai", "gemini", "google"]:
+            return await self.google_ai_client.query(query_text)
+        else:
+            logger.warning(f"Unknown engine: {engine}")
+            return {
+                "answer": f"Unknown engine: {engine}",
+                "sources": [],
+                "metadata": {
+                    "engine": engine,
+                    "error": "unknown_engine"
+                }
+            }
     
     async def _get_active_brands(self) -> List[Dict]:
         """Get all active brands from database."""

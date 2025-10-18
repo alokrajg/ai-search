@@ -13,6 +13,7 @@ class EngineType(str, Enum):
     CHATGPT = "chatgpt"
     CLAUDE = "claude"
     GEMINI = "gemini"
+    GOOGLE_AI = "google_ai"
 
 class QueryCategory(str, Enum):
     """Query categories."""

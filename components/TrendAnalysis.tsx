@@ -25,8 +25,10 @@ export default function TrendAnalysis({
   brands,
   visibilityData,
 }: TrendAnalysisProps) {
-  // Mock trend data - in a real app, this would come from historical data
-  const generateTrendData = () => {
+  // Use real historical data or show placeholder
+  const getTrendData = () => {
+    // In a real implementation, this would fetch historical data from the backend
+    // For now, we'll show a placeholder indicating no historical data
     const days = 7;
     const data = [];
 
@@ -41,9 +43,9 @@ export default function TrendAnalysis({
       };
 
       brands.forEach((brand, index) => {
-        const baseCitations = visibilityData[index]?.citations_count || 0;
-        const variation = Math.random() * 0.3 - 0.15; // ±15% variation
-        dayData[brand.name] = Math.round(baseCitations * (1 + variation));
+        // Use current data as baseline, but indicate it's not historical
+        const currentCitations = visibilityData[index]?.citations_count || 0;
+        dayData[brand.name] = currentCitations; // No random variation
       });
 
       data.push(dayData);
@@ -52,13 +54,19 @@ export default function TrendAnalysis({
     return data;
   };
 
-  const trendData = generateTrendData();
+  const trendData = getTrendData();
 
   // Calculate trend direction for each brand
   const getTrendDirection = (brandName: string) => {
     const brandData = trendData.map((day) => day[brandName]);
     const firstValue = brandData[0];
     const lastValue = brandData[brandData.length - 1];
+
+    // If no historical data (all values are the same), show neutral
+    if (firstValue === 0 || firstValue === lastValue) {
+      return { direction: "neutral", percentage: 0 };
+    }
+
     const change = ((lastValue - firstValue) / firstValue) * 100;
 
     if (change > 5) return { direction: "up", percentage: change };
@@ -70,7 +78,9 @@ export default function TrendAnalysis({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-white">Trend Analysis</h3>
-        <div className="text-sm text-gray-400">Last 7 days performance</div>
+        <div className="text-sm text-gray-400">
+          Current data (no historical trends available)
+        </div>
       </div>
 
       {/* Brand Legend */}
