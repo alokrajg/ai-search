@@ -1,7 +1,4 @@
 brand_name,text,category,engine_targets,active
-Zudio,"affordable fashion for young adults",product-help,"perplexity,chatgpt",true
-Zudio,"trendy clothing brands in India",brand-info,perplexity,true
-Zudio,"best budget fashion stores online",competitor,"perplexity,chatgpt",true
-H&M,"sustainable fashion brands",product-help,perplexity,true
-H&M,"fast fashion alternatives",competitor,perplexity,true
-Zara,"premium fashion brands",brand-info,perplexity,true
+Zudio,"best zudio clothing in india",product-help,"perplexity,chatgpt",true
+Zara,"best ZARA clothing in india",product-help,"perplexity,chatgpt",true
+

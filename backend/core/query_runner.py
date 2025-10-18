@@ -214,15 +214,22 @@ class QueryRunner:
     
     async def _get_active_brands(self) -> List[Dict]:
         """Get all active brands from database."""
-        # This would query the brands collection
-        # For now, return empty list - would be implemented with actual Firestore query
-        return []
+        try:
+            return await self.db_helper.get_all_brands()
+        except Exception as e:
+            logger.error(f"Error getting active brands: {e}")
+            return []
     
     async def _get_query(self, query_id: str) -> Optional[Dict]:
         """Get a specific query by ID."""
-        # This would query the queries collection
-        # For now, return None - would be implemented with actual Firestore query
-        return None
+        try:
+            doc = self.db.collection("queries").document(query_id).get()
+            if doc.exists:
+                return {"id": doc.id, **doc.to_dict()}
+            return None
+        except Exception as e:
+            logger.error(f"Error getting query {query_id}: {e}")
+            return None
     
     async def _record_failed_run(self, brand_id: str, query_id: str, error_message: str):
         """Record a failed run."""

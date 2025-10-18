@@ -22,7 +22,7 @@ interface ComparisonChartProps {
   type: "citations" | "engines" | "pages";
 }
 
-const COLORS = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6"];
+const COLORS = ["#F97316", "#FB923C", "#FDBA74", "#FED7AA", "#FFEDD5"];
 
 export default function ComparisonChart({
   brands,
@@ -106,18 +106,18 @@ export default function ComparisonChart({
           data={data}
           margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
         >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
+          <CartesianGrid strokeDasharray="3 3" stroke="#4B5563" />
+          <XAxis dataKey="name" stroke="#9CA3AF" />
+          <YAxis stroke="#9CA3AF" />
           <Tooltip />
           <Legend />
           {type === "citations" ? (
             <>
-              <Bar dataKey="citations" fill="#3B82F6" name="Citations" />
-              <Bar dataKey="pages" fill="#10B981" name="Pages" />
+              <Bar dataKey="citations" fill="#F97316" name="Citations" />
+              <Bar dataKey="pages" fill="#FB923C" name="Pages" />
             </>
           ) : (
-            <Bar dataKey="pages" fill="#8B5CF6" name="Pages" />
+            <Bar dataKey="pages" fill="#F97316" name="Pages" />
           )}
         </BarChart>
       </ResponsiveContainer>

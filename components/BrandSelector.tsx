@@ -62,7 +62,7 @@ export default function BrandSelector({
     <div className="relative">
       {/* Mode Toggle */}
       {showCompetitorMode && (
-        <div className="flex mb-3 bg-gray-100 rounded-lg p-1">
+        <div className="flex mb-3 bg-gray-700 rounded-lg p-1">
           <button
             onClick={() => {
               setMode("primary");
@@ -76,8 +76,8 @@ export default function BrandSelector({
             }}
             className={`flex-1 flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
               mode === "primary"
-                ? "bg-white text-primary-600 shadow-sm"
-                : "text-gray-600 hover:text-gray-900"
+                ? "bg-orange-500 text-white shadow-sm"
+                : "text-gray-300 hover:text-white"
             }`}
           >
             <Users className="w-4 h-4 mr-2" />
@@ -99,8 +99,8 @@ export default function BrandSelector({
             }}
             className={`flex-1 flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
               mode === "competitor"
-                ? "bg-white text-primary-600 shadow-sm"
-                : "text-gray-600 hover:text-gray-900"
+                ? "bg-orange-500 text-white shadow-sm"
+                : "text-gray-300 hover:text-white"
             }`}
           >
             <Plus className="w-4 h-4 mr-2" />
@@ -115,14 +115,14 @@ export default function BrandSelector({
           {selectedBrands.map((brand) => (
             <div
               key={brand.id}
-              className="flex items-center bg-primary-50 border border-primary-200 rounded-lg px-3 py-2"
+              className="flex items-center bg-orange-500/20 border border-orange-500/30 rounded-lg px-3 py-2"
             >
-              <span className="text-sm font-medium text-primary-700">
+              <span className="text-sm font-medium text-orange-400">
                 {brand.name}
               </span>
               <button
                 onClick={() => removeBrand(brand.id)}
-                className="ml-2 text-primary-500 hover:text-primary-700"
+                className="ml-2 text-orange-500 hover:text-orange-400"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -134,9 +134,9 @@ export default function BrandSelector({
       {/* Dropdown Trigger */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 py-3 bg-white border border-gray-300 rounded-lg hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+        className="w-full flex items-center justify-between px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg hover:border-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-colors"
       >
-        <span className="text-gray-700">{getDisplayText()}</span>
+        <span className="text-gray-300">{getDisplayText()}</span>
         <ChevronDown
           className={`w-5 h-5 text-gray-400 transition-transform ${
             isOpen ? "rotate-180" : ""
@@ -146,22 +146,22 @@ export default function BrandSelector({
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg">
+        <div className="absolute z-50 w-full mt-2 bg-gray-700 border border-gray-600 rounded-lg shadow-xl">
           {/* Search */}
-          <div className="p-3 border-b border-gray-200">
+          <div className="p-3 border-b border-gray-600">
             <input
               type="text"
               placeholder="Search brands..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-3 py-2 bg-gray-600 border border-gray-500 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
           </div>
 
           {/* Brand List */}
           <div className="max-h-60 overflow-y-auto">
             {filteredBrands.length === 0 ? (
-              <div className="p-4 text-center text-gray-500">
+              <div className="p-4 text-center text-gray-400">
                 No brands found
               </div>
             ) : (
@@ -179,20 +179,18 @@ export default function BrandSelector({
                     key={brand.id}
                     onClick={() => handleBrandToggle(brand)}
                     disabled={isDisabled}
-                    className={`w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 transition-colors ${
+                    className={`w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-600 transition-colors ${
                       isDisabled ? "opacity-50 cursor-not-allowed" : ""
                     }`}
                   >
                     <div>
-                      <div className="font-medium text-gray-900">
-                        {brand.name}
-                      </div>
-                      <div className="text-sm text-gray-500">
+                      <div className="font-medium text-white">{brand.name}</div>
+                      <div className="text-sm text-gray-400">
                         {brand.domains.join(", ")}
                       </div>
                     </div>
                     {isSelected && (
-                      <Check className="w-5 h-5 text-primary-600" />
+                      <Check className="w-5 h-5 text-orange-500" />
                     )}
                   </button>
                 );
@@ -202,8 +200,8 @@ export default function BrandSelector({
 
           {/* Footer */}
           {mode === "competitor" && (
-            <div className="p-3 border-t border-gray-200 bg-gray-50">
-              <div className="text-xs text-gray-500 text-center">
+            <div className="p-3 border-t border-gray-600 bg-gray-600">
+              <div className="text-xs text-gray-400 text-center">
                 Select up to {maxSelections} brands for comparison
               </div>
             </div>

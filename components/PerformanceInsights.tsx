@@ -57,45 +57,45 @@ export default function PerformanceInsights({
       { data: visibilityData[0], index: 0 }
     );
 
-    if (
-      mostDiverse.data &&
-      Object.keys(mostDiverse.data.engine_breakdown || {}).length > 1
-    ) {
+    if (mostDiverse.data) {
+      const engineCount = Object.keys(
+        mostDiverse.data.engine_breakdown || {}
+      ).length;
       insights.push({
         type: "info",
         icon: Target,
-        title: "Most Diverse Presence",
-        description: `${brands[mostDiverse.index]?.name} appears on ${
-          Object.keys(mostDiverse.data.engine_breakdown || {}).length
-        } AI engines`,
-        value: Object.keys(mostDiverse.data.engine_breakdown || {}).length,
+        title: "Most Diverse",
+        description: `${
+          brands[mostDiverse.index]?.name
+        } appears on ${engineCount} engines`,
+        value: engineCount,
       });
     }
 
     // Find highest visibility score
     const highestScore = visibilityData.reduce(
       (max, data, index) => {
-        const currentScore = data.visibility_score || 0;
-        const maxScore = max.data.visibility_score || 0;
+        const currentScore = (data.visibility_score || 0) * 100;
+        const maxScore = (max.data.visibility_score || 0) * 100;
         return currentScore > maxScore ? { data, index } : max;
       },
       { data: visibilityData[0], index: 0 }
     );
 
-    if (highestScore.data && (highestScore.data.visibility_score || 0) > 0.7) {
+    if (highestScore.data) {
       insights.push({
         type: "success",
         icon: CheckCircle,
-        title: "High Quality Visibility",
+        title: "Highest Score",
         description: `${brands[highestScore.index]?.name} has ${(
           (highestScore.data.visibility_score || 0) * 100
-        ).toFixed(1)}% relevance score`,
+        ).toFixed(1)}% visibility`,
         value:
           ((highestScore.data.visibility_score || 0) * 100).toFixed(1) + "%",
       });
     }
 
-    // Find brands with low visibility
+    // Find low visibility brands
     const lowVisibility = visibilityData.filter(
       (data, index) => (data.citations_count || 0) < 5 && brands[index]
     );
@@ -145,42 +145,16 @@ export default function PerformanceInsights({
 
   const insights = getInsights();
 
-  const getInsightIcon = (type: string) => {
-    switch (type) {
-      case "success":
-        return "text-green-600 bg-green-100";
-      case "warning":
-        return "text-yellow-600 bg-yellow-100";
-      case "info":
-        return "text-blue-600 bg-blue-100";
-      default:
-        return "text-gray-600 bg-gray-100";
-    }
-  };
-
-  const getInsightBorder = (type: string) => {
-    switch (type) {
-      case "success":
-        return "border-green-200";
-      case "warning":
-        return "border-yellow-200";
-      case "info":
-        return "border-blue-200";
-      default:
-        return "border-gray-200";
-    }
-  };
-
   if (insights.length === 0) {
     return (
-      <div className="bg-white rounded-xl p-6 border border-gray-200">
+      <div className="bg-gray-700 rounded-xl p-6 border border-gray-600">
         <div className="flex items-center justify-center py-8">
           <div className="text-center">
             <Clock className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+            <h3 className="text-lg font-medium text-white mb-2">
               No Insights Available
             </h3>
-            <p className="text-gray-500">
+            <p className="text-gray-400">
               Add more data to generate performance insights
             </p>
           </div>
@@ -190,32 +164,64 @@ export default function PerformanceInsights({
   }
 
   return (
-    <div className="space-y-4">
-      {insights.map((insight, index) => (
-        <div
-          key={index}
-          className={`bg-white rounded-xl p-6 border ${getInsightBorder(
-            insight.type
-          )} hover:shadow-lg transition-shadow`}
-        >
-          <div className="flex items-start space-x-4">
-            <div className={`p-3 rounded-lg ${getInsightIcon(insight.type)}`}>
-              <insight.icon className="w-6 h-6" />
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  {insight.title}
-                </h3>
-                <span className="text-2xl font-bold text-gray-900">
-                  {insight.value}
-                </span>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-white">
+          Performance Insights
+        </h3>
+        <div className="flex items-center text-sm text-gray-400">
+          <Clock className="w-4 h-4 mr-1" />
+          Updated 2 minutes ago
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {insights.map((insight, index) => (
+          <div
+            key={index}
+            className={`p-4 rounded-lg border ${
+              insight.type === "success"
+                ? "bg-orange-500/10 border-orange-500/20"
+                : insight.type === "warning"
+                ? "bg-yellow-500/10 border-yellow-500/20"
+                : "bg-blue-500/10 border-blue-500/20"
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div
+                  className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                    insight.type === "success"
+                      ? "bg-orange-500/20"
+                      : insight.type === "warning"
+                      ? "bg-yellow-500/20"
+                      : "bg-blue-500/20"
+                  }`}
+                >
+                  <insight.icon
+                    className={`w-5 h-5 ${
+                      insight.type === "success"
+                        ? "text-orange-500"
+                        : insight.type === "warning"
+                        ? "text-yellow-500"
+                        : "text-blue-500"
+                    }`}
+                  />
+                </div>
+                <div>
+                  <h4 className="font-medium text-white">{insight.title}</h4>
+                  <p className="text-sm text-gray-300">{insight.description}</p>
+                </div>
               </div>
-              <p className="text-gray-600">{insight.description}</p>
+              <div className="text-right">
+                <div className="text-2xl font-bold text-white">
+                  {insight.value}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

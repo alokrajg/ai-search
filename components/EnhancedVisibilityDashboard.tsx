@@ -98,39 +98,48 @@ export default function EnhancedVisibilityDashboard({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">
-            AI Visibility Monitoring
-          </h2>
-          <p className="text-gray-600 mt-1">
-            Track Zudio's visibility across AI search engines and compare with
-            competitors
-          </p>
-        </div>
-        <div className="flex items-center space-x-3">
-          <button
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-            className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50"
-          >
-            <TrendingUp className="w-4 h-4 mr-2" />
-            {isRefreshing ? "Refreshing..." : "Refresh"}
-          </button>
-          <button
-            onClick={handleExport}
-            className="flex items-center px-4 py-2 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-          >
-            <BarChart3 className="w-4 h-4 mr-2" />
-            Export
-          </button>
+      <div className="bg-gradient-to-r from-gray-800 to-gray-700 rounded-2xl p-8 border border-gray-600">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+          <div>
+            <div className="flex items-center space-x-3 mb-3">
+              <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center">
+                <Eye className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-3xl font-bold text-white">
+                  AI Visibility Monitoring
+                </h2>
+                <p className="text-gray-300 mt-1 text-lg">
+                  Track Zudio's visibility across AI search engines and compare
+                  with competitors
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              className="flex items-center px-6 py-3 text-sm font-medium text-gray-300 bg-gray-700 border border-gray-600 rounded-xl hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 transition-all duration-200 shadow-sm"
+            >
+              <TrendingUp className="w-4 h-4 mr-2" />
+              {isRefreshing ? "Refreshing..." : "Refresh"}
+            </button>
+            <button
+              onClick={handleExport}
+              className="flex items-center px-6 py-3 text-sm font-medium text-white bg-orange-500 border border-transparent rounded-xl hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-all duration-200 shadow-sm"
+            >
+              <BarChart3 className="w-4 h-4 mr-2" />
+              Export
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Brand Selector */}
-      <div className="bg-white rounded-xl p-6 border border-gray-200">
+      <div className="bg-gray-800 rounded-2xl p-8 border border-gray-600 shadow-sm">
         <BrandSelector
           brands={brands}
           selectedBrands={selectedBrands}
@@ -142,16 +151,16 @@ export default function EnhancedVisibilityDashboard({
 
       {/* Content based on selected mode */}
       {visibilityData.length > 0 && (
-        <div className="space-y-4">
+        <div className="space-y-8">
           {selectedBrands.length === 1 ? (
             // Zudio Only Mode - Show individual metrics
-            <div>
-              <div className="flex items-center justify-between mb-6">
+            <div className="bg-gray-800 rounded-2xl p-8 border border-gray-600 shadow-sm">
+              <div className="flex items-center justify-between mb-8">
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">
+                  <h3 className="text-2xl font-bold text-white">
                     Zudio Performance Metrics
                   </h3>
-                  <p className="text-gray-600 mt-1">
+                  <p className="text-gray-300 mt-2 text-lg">
                     Individual performance indicators for Zudio
                   </p>
                 </div>
@@ -163,64 +172,78 @@ export default function EnhancedVisibilityDashboard({
             </div>
           ) : (
             // vs Competitors Mode - Show comparison charts and visuals
-            <div>
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900">
-                    Competitive Analysis
-                  </h3>
-                  <p className="text-gray-600 mt-1">
-                    Compare Zudio's performance against competitors
-                  </p>
+            <div className="space-y-8">
+              <div className="bg-gray-800 rounded-2xl p-8 border border-gray-600 shadow-sm">
+                <div className="flex items-center justify-between mb-8">
+                  <div>
+                    <h3 className="text-2xl font-bold text-white">
+                      Competitive Analysis
+                    </h3>
+                    <p className="text-gray-300 mt-2 text-lg">
+                      Compare Zudio's performance against competitors
+                    </p>
+                  </div>
+                </div>
+
+                {/* Comparison Charts */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <div className="bg-gray-700 rounded-xl p-6 border border-gray-600">
+                    <ComparisonChart
+                      brands={selectedBrands}
+                      visibilityData={visibilityData}
+                      type="citations"
+                    />
+                  </div>
+                  <div className="bg-gray-700 rounded-xl p-6 border border-gray-600">
+                    <ComparisonChart
+                      brands={selectedBrands}
+                      visibilityData={visibilityData}
+                      type="engines"
+                    />
+                  </div>
                 </div>
               </div>
 
-              {/* Comparison Charts */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                <ComparisonChart
+              {/* Performance Insights */}
+              <div className="bg-gray-800 rounded-2xl p-8 border border-gray-600 shadow-sm">
+                <PerformanceInsights
                   brands={selectedBrands}
                   visibilityData={visibilityData}
-                  type="citations"
-                />
-                <ComparisonChart
-                  brands={selectedBrands}
-                  visibilityData={visibilityData}
-                  type="engines"
                 />
               </div>
 
-              {/* Performance Insights */}
-              <PerformanceInsights
-                brands={selectedBrands}
-                visibilityData={visibilityData}
-              />
-
               {/* Trend Analysis */}
-              <TrendAnalysis
-                brands={selectedBrands}
-                visibilityData={visibilityData}
-              />
+              <div className="bg-gray-800 rounded-2xl p-8 border border-gray-600 shadow-sm">
+                <TrendAnalysis
+                  brands={selectedBrands}
+                  visibilityData={visibilityData}
+                />
+              </div>
             </div>
           )}
         </div>
       )}
 
       {isLoading && (
-        <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-          <span className="ml-3 text-gray-600">Loading visibility data...</span>
+        <div className="bg-gray-800 rounded-2xl p-12 border border-gray-600 shadow-sm">
+          <div className="flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+            <span className="ml-3 text-gray-300 text-lg">
+              Loading visibility data...
+            </span>
+          </div>
         </div>
       )}
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <div className="bg-gray-800 border border-gray-600 rounded-2xl p-6 shadow-sm">
           <div className="flex">
             <div className="flex-shrink-0">
-              <Eye className="h-5 w-5 text-red-400" />
+              <Eye className="h-6 w-6 text-orange-500" />
             </div>
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800">Error</h3>
-              <div className="mt-2 text-sm text-red-700">
+            <div className="ml-4">
+              <h3 className="text-lg font-medium text-white">Error</h3>
+              <div className="mt-2 text-gray-300">
                 <p>{error}</p>
               </div>
             </div>

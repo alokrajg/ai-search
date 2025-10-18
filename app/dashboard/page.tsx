@@ -29,13 +29,20 @@ import EnhancedVisibilityDashboard from "@/components/EnhancedVisibilityDashboar
 import AlertsDashboard from "@/components/AlertsDashboard";
 import OptimizationDashboard from "@/components/OptimizationDashboard";
 import OverviewDashboard from "@/components/OverviewDashboard";
+import QueryUploadModal from "@/components/QueryUploadModal";
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedTimeRange, setSelectedTimeRange] = useState("7d");
   const [isLoading, setIsLoading] = useState(false);
-  const [lastUpdated, setLastUpdated] = useState(new Date());
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+
+  // Initialize timestamp on client side
+  useEffect(() => {
+    setLastUpdated(new Date());
+  }, []);
 
   // Simulate real-time updates
   useEffect(() => {
@@ -52,6 +59,12 @@ export default function Dashboard() {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsRefreshing(false);
     setLastUpdated(new Date());
+  };
+
+  const handleUploadComplete = () => {
+    // Refresh the dashboard data after upload
+    handleRefresh();
+    setIsUploadModalOpen(false);
   };
 
   // Mock data for demonstration
@@ -152,35 +165,36 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-900">
       {/* Header */}
-      <header className="bg-white/95 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
+      <header className="bg-gray-800/95 backdrop-blur-sm border-b border-gray-700 sticky top-0 z-50">
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="w-8 h-8 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center group hover:scale-110 transition-transform duration-300">
+              <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg flex items-center justify-center group hover:scale-110 transition-transform duration-300">
                 <Search className="w-5 h-5 text-white group-hover:rotate-12 transition-transform duration-300" />
               </div>
               <div>
                 <div className="flex items-center space-x-3">
-                  <h1 className="text-xl font-semibold text-gray-900">
+                  <h1 className="text-xl font-semibold text-white">
                     GEO Dashboard
                   </h1>
-                  <div className="flex items-center space-x-2 px-3 py-1 bg-primary-50 border border-primary-200 rounded-full">
-                    <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
-                    <span className="text-sm font-medium text-primary-700">
+                  <div className="flex items-center space-x-2 px-3 py-1 bg-orange-500/20 border border-orange-500/30 rounded-full">
+                    <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                    <span className="text-sm font-medium text-orange-400">
                       Zudio
                     </span>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className="flex items-center space-x-1">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                    <p className="text-sm text-gray-500">Live monitoring</p>
+                    <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
+                    <p className="text-sm text-gray-300">Live monitoring</p>
                   </div>
-                  <span className="text-gray-300">•</span>
-                  <p className="text-sm text-gray-500">
-                    Last updated: {lastUpdated.toLocaleTimeString()}
+                  <span className="text-gray-600">•</span>
+                  <p className="text-sm text-gray-300">
+                    Last updated:{" "}
+                    {lastUpdated?.toLocaleTimeString() || "Loading..."}
                   </p>
                 </div>
               </div>
@@ -189,7 +203,7 @@ export default function Dashboard() {
               <select
                 value={selectedTimeRange}
                 onChange={(e) => setSelectedTimeRange(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 hover:border-primary-300 transition-colors"
+                className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-sm text-white focus:outline-none focus:ring-2 focus:ring-orange-500 hover:border-orange-400 transition-colors"
               >
                 <option value="24h">Last 24 hours</option>
                 <option value="7d">Last 7 days</option>
@@ -199,17 +213,20 @@ export default function Dashboard() {
               <button
                 onClick={handleRefresh}
                 disabled={isRefreshing}
-                className="flex items-center px-3 py-2 text-gray-600 hover:text-primary-600 transition-colors disabled:opacity-50"
+                className="flex items-center px-3 py-2 text-gray-300 hover:text-orange-400 transition-colors disabled:opacity-50"
               >
                 <RefreshCw
                   className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`}
                 />
               </button>
-              <button className="flex items-center px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-all duration-300 transform hover:scale-105 group">
+              <button
+                onClick={() => setIsUploadModalOpen(true)}
+                className="flex items-center px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all duration-300 transform hover:scale-105 group"
+              >
                 <Plus className="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform duration-300" />
-                Add Domain
+                Add Queries
               </button>
-              <button className="p-2 text-gray-500 hover:text-gray-700 transition-colors hover:bg-gray-100 rounded-lg">
+              <button className="p-2 text-gray-300 hover:text-white transition-colors hover:bg-gray-700 rounded-lg">
                 <Settings className="w-5 h-5" />
               </button>
             </div>
@@ -219,7 +236,7 @@ export default function Dashboard() {
 
       <div className="flex">
         {/* Sidebar */}
-        <aside className="w-64 bg-white/95 backdrop-blur-sm border-r border-gray-200 min-h-screen">
+        <aside className="w-64 bg-gray-800/95 backdrop-blur-sm border-r border-gray-700 min-h-screen">
           <nav className="p-4">
             <ul className="space-y-2">
               {tabs.map((tab, index) => (
@@ -228,8 +245,8 @@ export default function Dashboard() {
                     onClick={() => setActiveTab(tab.id)}
                     className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-all duration-300 group ${
                       activeTab === tab.id
-                        ? "bg-primary-100 text-primary-700 shadow-sm"
-                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                        ? "bg-orange-500/20 text-orange-400 shadow-sm"
+                        : "text-gray-300 hover:text-white hover:bg-gray-700"
                     }`}
                     style={{
                       animationDelay: `${index * 50}ms`,
@@ -238,13 +255,13 @@ export default function Dashboard() {
                     <tab.icon
                       className={`w-5 h-5 mr-3 transition-transform duration-300 ${
                         activeTab === tab.id
-                          ? "scale-110"
+                          ? "scale-110 text-orange-400"
                           : "group-hover:scale-105"
                       }`}
                     />
-                    {tab.label}
+                    <span className="truncate">{tab.label}</span>
                     {activeTab === tab.id && (
-                      <div className="ml-auto w-2 h-2 bg-primary-500 rounded-full animate-pulse" />
+                      <div className="ml-auto w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
                     )}
                   </button>
                 </li>
@@ -254,7 +271,7 @@ export default function Dashboard() {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-6 bg-gray-900">
           {activeTab === "overview" && <OverviewDashboard />}
 
           {activeTab === "visibility" && <EnhancedVisibilityDashboard />}
@@ -264,6 +281,13 @@ export default function Dashboard() {
           {activeTab === "alerts" && <AlertsDashboard />}
         </main>
       </div>
+
+      {/* Query Upload Modal */}
+      <QueryUploadModal
+        isOpen={isUploadModalOpen}
+        onClose={() => setIsUploadModalOpen(false)}
+        onUploadComplete={handleUploadComplete}
+      />
     </div>
   );
 }

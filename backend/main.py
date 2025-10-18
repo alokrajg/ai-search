@@ -10,7 +10,7 @@ import uvicorn
 import os
 from dotenv import load_dotenv
 
-from api.routes import brands, citations, queries, visibility, debug
+from api.routes import brands, citations, queries, visibility, debug, query_upload, query_export, query_performance, dashboard_metrics
 from core.database import init_firestore
 from core.scheduler import start_scheduler, stop_scheduler
 
@@ -55,6 +55,10 @@ app.include_router(brands.router, prefix="/api/v1/brands", tags=["brands"])
 app.include_router(citations.router, prefix="/api/v1/citations", tags=["citations"])
 app.include_router(queries.router, prefix="/api/v1/queries", tags=["queries"])
 app.include_router(visibility.router, prefix="/api/v1/visibility", tags=["visibility"])
+app.include_router(query_upload.router, prefix="/api/v1/upload", tags=["query-upload"])
+app.include_router(query_export.router, prefix="/api/v1/export", tags=["query-export"])
+app.include_router(query_performance.router, prefix="/api/v1/performance", tags=["query-performance"])
+app.include_router(dashboard_metrics.router, prefix="/api/v1/dashboard", tags=["dashboard-metrics"])
 app.include_router(debug.router, prefix="/api/v1/debug", tags=["debug"])
 
 @app.get("/")

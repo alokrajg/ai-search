@@ -148,6 +148,18 @@ class FirestoreHelper:
         
         return [{"id": doc.id, **doc.to_dict()} for doc in citations]
     
+    async def get_all_citations(self) -> list:
+        """Get all citations."""
+        citations = []
+        docs = self.db.collection(COLLECTIONS["citations"]).stream()
+        
+        for doc in docs:
+            citation_data = doc.to_dict()
+            citation_data["id"] = doc.id
+            citations.append(citation_data)
+        
+        return citations
+    
     async def create_run(self, run_data: dict) -> str:
         """Create a new run document."""
         doc_ref = self.db.collection(COLLECTIONS["runs"]).document()
@@ -183,3 +195,36 @@ class FirestoreHelper:
             .stream()
         
         return [{"id": doc.id, **doc.to_dict()} for doc in aggregates]
+    
+    async def delete_brand(self, brand_id: str):
+        """Delete a brand and all its associated data."""
+        # Delete brand document
+        self.db.collection(COLLECTIONS["brands"]).document(brand_id).delete()
+        
+        # Delete associated queries
+        queries = self.db.collection(COLLECTIONS["queries"])\
+            .where(filter=FieldFilter("brand_id", "==", brand_id))\
+            .stream()
+        for query in queries:
+            query.reference.delete()
+        
+        # Delete associated citations
+        citations = self.db.collection(COLLECTIONS["citations"])\
+            .where(filter=FieldFilter("brand_id", "==", brand_id))\
+            .stream()
+        for citation in citations:
+            citation.reference.delete()
+        
+        # Delete visibility metrics
+        metrics_ref = self.db.collection("visibility_metrics").document(brand_id)
+        daily_metrics = metrics_ref.collection("daily").stream()
+        for daily_doc in daily_metrics:
+            daily_doc.reference.delete()
+        metrics_ref.delete()
+        
+        # Delete aggregates
+        aggregates_ref = self.db.collection(COLLECTIONS["aggregates"]).document(brand_id)
+        daily_aggregates = aggregates_ref.collection("daily").stream()
+        for daily_doc in daily_aggregates:
+            daily_doc.reference.delete()
+        aggregates_ref.delete()
