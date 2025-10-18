@@ -35,6 +35,19 @@ async def create_brand(brand_data: BrandCreate, db=Depends(get_db)):
         logger.error(f"Error creating brand: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.get("/", response_model=List[BrandResponse])
+async def get_brands(db=Depends(get_db)):
+    """Get all brands."""
+    try:
+        db_helper = FirestoreHelper(db)
+        brands = await db_helper.get_all_brands()
+        
+        return [BrandResponse(**brand) for brand in brands]
+        
+    except Exception as e:
+        logger.error(f"Error getting brands: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.get("/{brand_id}", response_model=BrandResponse)
 async def get_brand(brand_id: str, db=Depends(get_db)):
     """Get brand by ID."""
@@ -53,20 +66,6 @@ async def get_brand(brand_id: str, db=Depends(get_db)):
         logger.error(f"Error getting brand: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/", response_model=List[BrandResponse])
-async def list_brands(db=Depends(get_db)):
-    """List all brands."""
-    try:
-        db_helper = FirestoreHelper(db)
-        
-        # Get all brands (this would be implemented with actual Firestore query)
-        brands = []  # Placeholder - would query brands collection
-        
-        return [BrandResponse(**brand) for brand in brands]
-        
-    except Exception as e:
-        logger.error(f"Error listing brands: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
 
 @router.put("/{brand_id}", response_model=APIResponse)
 async def update_brand(brand_id: str, brand_data: BrandCreate, db=Depends(get_db)):

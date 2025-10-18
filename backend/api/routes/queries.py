@@ -13,6 +13,17 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
+@router.get("/", response_model=List[QueryResponse])
+async def get_all_queries(db=Depends(get_db)):
+    """Get all queries."""
+    try:
+        db_helper = FirestoreHelper(db)
+        queries = await db_helper.get_all_queries()
+        return [QueryResponse(**query) for query in queries]
+    except Exception as e:
+        logger.error(f"Error getting queries: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.post("/", response_model=APIResponse)
 async def create_query(query_data: QueryCreate, db=Depends(get_db)):
     """Create a new query."""

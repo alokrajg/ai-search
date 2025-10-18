@@ -93,6 +93,30 @@ class FirestoreHelper:
             return {"id": doc.id, **doc.to_dict()}
         return None
     
+    async def get_all_brands(self) -> list:
+        """Get all brand documents."""
+        brands = []
+        docs = self.db.collection(COLLECTIONS["brands"]).stream()
+
+        for doc in docs:
+            brand_data = doc.to_dict()
+            brand_data["id"] = doc.id
+            brands.append(brand_data)
+
+        return brands
+
+    async def get_all_queries(self) -> list:
+        """Get all query documents."""
+        queries = []
+        docs = self.db.collection(COLLECTIONS["queries"]).stream()
+
+        for doc in docs:
+            query_data = doc.to_dict()
+            query_data["id"] = doc.id
+            queries.append(query_data)
+
+        return queries
+    
     async def create_query(self, query_data: dict) -> str:
         """Create a new query document."""
         doc_ref = self.db.collection(COLLECTIONS["queries"]).document()

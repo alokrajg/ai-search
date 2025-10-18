@@ -78,7 +78,7 @@ export default function Chart({
           </PieChart>
         );
       default:
-        return null;
+        return <div>Unsupported chart type</div>;
     }
   };
 

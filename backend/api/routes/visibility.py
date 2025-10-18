@@ -113,11 +113,13 @@ async def get_current_visibility(brand_id: str, db=Depends(get_db)):
         # Get today's date
         today = datetime.now().strftime("%Y-%m-%d")
         
-        # Try to get today's aggregate
-        aggregates = await db_helper.get_aggregates(brand_id, today, today)
+        # Try to get today's visibility metrics
+        doc_ref = db.collection("visibility_metrics").document(brand_id).collection("daily").document(today)
+        doc = doc_ref.get()
         
-        if aggregates:
-            return VisibilityResponse(**aggregates[0])
+        if doc.exists:
+            data = doc.to_dict()
+            return VisibilityResponse(**data)
         else:
             # Return empty metrics if no data
             return VisibilityResponse(

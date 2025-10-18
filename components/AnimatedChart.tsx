@@ -129,7 +129,7 @@ export default function AnimatedChart({
           </PieChart>
         );
       default:
-        return null;
+        return <div>Unsupported chart type</div>;
     }
   };
 

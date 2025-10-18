@@ -326,3 +326,25 @@ These feed the cards in your screenshots: big visibility number, ranking-by-mode
 * Or produce **detailed code stubs** for: (a) Perplexity client + parsing, (b) matching + confidence module, (c) Firestore save/aggregator.
 
 Tell me which one you want and I’ll produce the code and example Firestore document payloads next. (No need to confirm the Perplexity choice — you already picked it — so I’ll assume Perplexity + Firestore ready.)
+
+
+
+
+
+### 🔝 **Top 10 AI Visibility & Citation Metrics**
+
+| #      | Metric                                               | What it shows                                                           | Why it matters                                                                 |
+| :----- | :--------------------------------------------------- | :---------------------------------------------------------------------- | :----------------------------------------------------------------------------- |
+| **1**  | **Brand Visibility Score (%)**                       | % of monitored AI queries where your brand/page was mentioned or cited. | Core visibility KPI — quantifies how “findable” your brand is in AI responses. |
+| **2**  | **Total Citations Count**                            | Number of times your brand or pages were cited across all AI engines.   | Measures total exposure footprint.                                             |
+| **3**  | **Query Coverage (%)**                               | % of tracked queries where your brand appeared at least once.           | Indicates breadth of brand reach.                                              |
+| **4**  | **Visibility Rank vs Competitors**                   | Rank position of your brand based on visibility score.                  | Enables quick benchmarking.                                                    |
+| **5**  | **Engine Breakdown (Perplexity / ChatGPT / Gemini)** | Distribution of citations per engine.                                   | Reveals where your brand performs best.                                        |
+| **6**  | **Visibility Trend (Last 30 Days)**                  | How visibility score changes over time.                                 | Shows growth, decline, or consistency.                                         |
+| **7**  | **Top Cited Pages / URLs**                           | Pages that appear most frequently in AI responses.                      | Helps identify high-performing content.                                        |
+| **8**  | **Top Performing Queries**                           | Search or prompt terms where your brand is most cited.                  | Pinpoints keywords driving visibility.                                         |
+| **9**  | **Average Citation Confidence Score**                | Mean detection confidence (e.g., from model match).                     | Measures reliability/quality of detection.                                     |
+| **10** | **Correct vs Incorrect Citation Ratio**              | % of citations accurately pointing to your canonical domain.            | Monitors citation accuracy & trust.                                            |
+
+---
+
