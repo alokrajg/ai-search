@@ -119,6 +119,28 @@ async def get_current_visibility(brand_id: str, db=Depends(get_db)):
         
         if doc.exists:
             data = doc.to_dict()
+            
+            # Add query metrics to the response
+            try:
+                # Get query data from export summary
+                from api.routes.query_export import get_queries_summary
+                query_summary = await get_queries_summary(brand_id, db)
+                
+                # Add query fields to the response
+                data.update({
+                    'total_queries': query_summary.get('total_queries', 0),
+                    'active_queries': query_summary.get('active_queries', 0),
+                    'average_citations_per_query': query_summary.get('average_citations_per_query', 0.0)
+                })
+            except Exception as e:
+                logger.warning(f"Could not fetch query data for brand {brand_id}: {e}")
+                # Add default query values
+                data.update({
+                    'total_queries': 0,
+                    'active_queries': 0,
+                    'average_citations_per_query': 0.0
+                })
+            
             return VisibilityResponse(**data)
         else:
             # Return empty metrics if no data
@@ -127,7 +149,10 @@ async def get_current_visibility(brand_id: str, db=Depends(get_db)):
                 citations_count=0,
                 unique_pages=0,
                 visibility_score=0.0,
-                engine_breakdown={}
+                engine_breakdown={},
+                total_queries=0,
+                active_queries=0,
+                average_citations_per_query=0.0
             )
         
     except HTTPException:

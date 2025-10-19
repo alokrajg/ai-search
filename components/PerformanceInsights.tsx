@@ -10,6 +10,8 @@ import {
   CheckCircle,
   Clock,
   Users,
+  Search,
+  BarChart3,
 } from "lucide-react";
 import { Brand, VisibilityMetrics } from "@/lib/api";
 
@@ -138,6 +140,63 @@ export default function PerformanceInsights({
         } dominates with ${marketLeader.share.toFixed(1)}% market share`,
         value: marketLeader.share.toFixed(1) + "%",
       });
+    }
+
+    // Query-related insights
+    const totalQueries = visibilityData.reduce(
+      (sum, data) => sum + (data.total_queries || 0),
+      0
+    );
+
+    if (totalQueries > 0) {
+      // Most active query brand
+      const mostActiveQueries = visibilityData.reduce(
+        (max, data, index) => {
+          const currentQueries = data.total_queries || 0;
+          const maxQueries = max.data.total_queries || 0;
+          return currentQueries > maxQueries ? { data, index } : max;
+        },
+        { data: visibilityData[0], index: 0 }
+      );
+
+      if (mostActiveQueries.data && mostActiveQueries.data.total_queries > 0) {
+        insights.push({
+          type: "success",
+          icon: Search,
+          title: "Most Active Queries",
+          description: `${brands[mostActiveQueries.index]?.name} has ${
+            mostActiveQueries.data.total_queries
+          } active queries`,
+          value: mostActiveQueries.data.total_queries,
+        });
+      }
+
+      // Best query efficiency
+      const bestEfficiency = visibilityData.reduce(
+        (max, data, index) => {
+          const currentEfficiency = data.average_citations_per_query || 0;
+          const maxEfficiency = max.data.average_citations_per_query || 0;
+          return currentEfficiency > maxEfficiency ? { data, index } : max;
+        },
+        { data: visibilityData[0], index: 0 }
+      );
+
+      if (
+        bestEfficiency.data &&
+        bestEfficiency.data.average_citations_per_query > 0
+      ) {
+        insights.push({
+          type: "info",
+          icon: BarChart3,
+          title: "Best Query Efficiency",
+          description: `${
+            brands[bestEfficiency.index]?.name
+          } averages ${bestEfficiency.data.average_citations_per_query.toFixed(
+            2
+          )} citations per query`,
+          value: bestEfficiency.data.average_citations_per_query.toFixed(2),
+        });
+      }
     }
 
     return insights;

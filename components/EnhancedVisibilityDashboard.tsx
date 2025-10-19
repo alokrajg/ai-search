@@ -188,6 +188,9 @@ export default function EnhancedVisibilityDashboard({
                 {/* Comparison Charts */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   <div className="bg-gray-700 rounded-xl p-6 border border-gray-600">
+                    <h4 className="text-white font-semibold mb-4">
+                      Citations & Pages
+                    </h4>
                     <ComparisonChart
                       brands={selectedBrands}
                       visibilityData={visibilityData}
@@ -195,10 +198,37 @@ export default function EnhancedVisibilityDashboard({
                     />
                   </div>
                   <div className="bg-gray-700 rounded-xl p-6 border border-gray-600">
+                    <h4 className="text-white font-semibold mb-4">
+                      Engine Distribution
+                    </h4>
                     <ComparisonChart
                       brands={selectedBrands}
                       visibilityData={visibilityData}
                       type="engines"
+                    />
+                  </div>
+                </div>
+
+                {/* Query Performance Charts */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+                  <div className="bg-gray-700 rounded-xl p-6 border border-gray-600">
+                    <h4 className="text-white font-semibold mb-4">
+                      Query Volume
+                    </h4>
+                    <ComparisonChart
+                      brands={selectedBrands}
+                      visibilityData={visibilityData}
+                      type="queries"
+                    />
+                  </div>
+                  <div className="bg-gray-700 rounded-xl p-6 border border-gray-600">
+                    <h4 className="text-white font-semibold mb-4">
+                      Query Performance
+                    </h4>
+                    <ComparisonChart
+                      brands={selectedBrands}
+                      visibilityData={visibilityData}
+                      type="query_performance"
                     />
                   </div>
                 </div>

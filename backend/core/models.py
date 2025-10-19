@@ -110,6 +110,9 @@ class VisibilityResponse(BaseModel):
     unique_pages: int
     visibility_score: float
     engine_breakdown: Dict[str, int]
+    total_queries: Optional[int] = 0
+    active_queries: Optional[int] = 0
+    average_citations_per_query: Optional[float] = 0.0
 
 class TopPageResponse(BaseModel):
     """Model for top performing pages."""

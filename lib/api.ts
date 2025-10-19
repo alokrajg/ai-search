@@ -43,6 +43,9 @@ export interface VisibilityMetrics {
   unique_pages: number;
   visibility_score: number;
   engine_breakdown: Record<string, number>;
+  total_queries?: number;
+  active_queries?: number;
+  average_citations_per_query?: number;
   top_pages?: Array<{
     url: string;
     citations: number;

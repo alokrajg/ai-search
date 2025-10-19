@@ -19,7 +19,7 @@ import { Brand, VisibilityMetrics } from "@/lib/api";
 interface ComparisonChartProps {
   brands: Brand[];
   visibilityData: VisibilityMetrics[];
-  type: "citations" | "engines" | "pages";
+  type: "citations" | "engines" | "pages" | "queries" | "query_performance";
 }
 
 const COLORS = ["#F97316", "#FB923C", "#FDBA74", "#FED7AA", "#FFEDD5"];
@@ -59,6 +59,25 @@ export default function ComparisonChart({
           visibility: (
             (visibilityData[index]?.visibility_score || 0) * 100
           ).toFixed(1),
+        }));
+
+      case "queries":
+        return brands.map((brand, index) => ({
+          name: brand.name,
+          totalQueries: visibilityData[index]?.total_queries || 0,
+          activeQueries: visibilityData[index]?.active_queries || 0,
+        }));
+
+      case "query_performance":
+        return brands.map((brand, index) => ({
+          name: brand.name,
+          citations: visibilityData[index]?.citations_count || 0,
+          queries: visibilityData[index]?.total_queries || 0,
+          avgCitationsPerQuery:
+            visibilityData[index]?.total_queries > 0
+              ? (visibilityData[index]?.citations_count || 0) /
+                visibilityData[index]?.total_queries
+              : 0,
         }));
 
       default:
@@ -115,6 +134,25 @@ export default function ComparisonChart({
             <>
               <Bar dataKey="citations" fill="#F97316" name="Citations" />
               <Bar dataKey="pages" fill="#FB923C" name="Pages" />
+            </>
+          ) : type === "queries" ? (
+            <>
+              <Bar dataKey="totalQueries" fill="#F97316" name="Total Queries" />
+              <Bar
+                dataKey="activeQueries"
+                fill="#FB923C"
+                name="Active Queries"
+              />
+            </>
+          ) : type === "query_performance" ? (
+            <>
+              <Bar dataKey="citations" fill="#F97316" name="Citations" />
+              <Bar dataKey="queries" fill="#FB923C" name="Queries" />
+              <Bar
+                dataKey="avgCitationsPerQuery"
+                fill="#FDBA74"
+                name="Avg Citations/Query"
+              />
             </>
           ) : (
             <Bar dataKey="pages" fill="#F97316" name="Pages" />
