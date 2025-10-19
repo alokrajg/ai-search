@@ -73,16 +73,16 @@ def _add_query_runner_job():
     if scheduler is None:
         return
     
-    # Run every 30 minutes
-    scheduler.add_job(
-        func=run_query_job,
-        trigger=IntervalTrigger(minutes=30),
-        id='query_runner',
-        name='Query Runner - Run brand queries against AI engines',
-        replace_existing=True
-    )
+    # DISABLED: Run every 2 hours (reduced frequency to save costs)
+    # scheduler.add_job(
+    #     func=run_query_job,
+    #     trigger=IntervalTrigger(hours=2),
+    #     id='query_runner',
+    #     name='Query Runner - Run brand queries against AI engines',
+    #     replace_existing=True
+    # )
     
-    logger.info("📅 Added query runner job (every 30 minutes)")
+    logger.info("📅 Query runner job DISABLED to prevent unexpected API costs")
 
 def _add_aggregation_job():
     """Add the aggregation job to scheduler."""

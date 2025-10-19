@@ -10,9 +10,17 @@ from typing import Dict, List, Optional, Tuple
 from datetime import datetime
 import asyncio
 from dotenv import load_dotenv
+import sys
+from pathlib import Path
 
 # Load environment variables from .env file
 load_dotenv()
+
+# Add config directory to path
+config_dir = Path(__file__).parent.parent / "config"
+sys.path.insert(0, str(config_dir))
+
+from api_config import api_config
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +30,17 @@ class GoogleAIClient:
     def __init__(self):
         self.api_key = os.getenv("GOOGLE_AI_API_KEY")
         self.base_url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
-        self.timeout = 30
+        
+        # Get configuration from centralized config
+        config = api_config.get_model_config("google_ai")
+        self.model = config.get("model", "gemini-2.0-flash")
+        self.max_tokens = config.get("max_tokens", 300)
+        self.temperature = config.get("temperature", 0.1)
+        self.timeout = config.get("timeout", 30)
+        
+        # Get rate limiting config
+        rate_config = api_config.get_rate_limit_config("google_ai")
+        self.requests_per_minute = rate_config.get("requests_per_minute", 15)
         
         if not self.api_key:
             logger.warning("GOOGLE_AI_API_KEY not found. Google AI queries will be skipped.")
@@ -78,10 +96,10 @@ class GoogleAIClient:
                 }
             ],
             "generationConfig": {
-                "temperature": 0.3,
+                "temperature": self.temperature,
                 "topK": 40,
                 "topP": 0.95,
-                "maxOutputTokens": 1000,
+                "maxOutputTokens": self.max_tokens,
             },
             "safetySettings": [
                 {

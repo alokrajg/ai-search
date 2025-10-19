@@ -10,9 +10,17 @@ from typing import Dict, List, Optional, Tuple
 from datetime import datetime
 import asyncio
 from dotenv import load_dotenv
+import sys
+from pathlib import Path
 
 # Load environment variables from .env file
 load_dotenv()
+
+# Add config directory to path
+config_dir = Path(__file__).parent.parent / "config"
+sys.path.insert(0, str(config_dir))
+
+from api_config import api_config
 
 logger = logging.getLogger(__name__)
 
@@ -22,8 +30,17 @@ class ChatGPTClient:
     def __init__(self):
         self.api_key = os.getenv("OPENAI_API_KEY")
         self.base_url = "https://api.openai.com/v1/chat/completions"
-        self.model = "gpt-3.5-turbo"  # More cost-effective than gpt-4
-        self.timeout = 30
+        
+        # Get configuration from centralized config
+        config = api_config.get_model_config("chatgpt")
+        self.model = config.get("model", "gpt-3.5-turbo")
+        self.max_tokens = config.get("max_tokens", 500)
+        self.temperature = config.get("temperature", 0.3)
+        self.timeout = config.get("timeout", 30)
+        
+        # Get rate limiting config
+        rate_config = api_config.get_rate_limit_config("chatgpt")
+        self.requests_per_minute = rate_config.get("requests_per_minute", 20)
         
         if not self.api_key:
             logger.warning("OPENAI_API_KEY not found. ChatGPT queries will be skipped.")
@@ -80,8 +97,8 @@ class ChatGPTClient:
                     "content": enhanced_prompt
                 }
             ],
-            "max_tokens": 1000,
-            "temperature": 0.3,
+            "max_tokens": self.max_tokens,
+            "temperature": self.temperature,
             "top_p": 0.9
         }
         

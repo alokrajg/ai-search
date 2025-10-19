@@ -9,6 +9,14 @@ import logging
 from typing import Dict, List, Optional, Tuple
 from datetime import datetime
 import asyncio
+import sys
+from pathlib import Path
+
+# Add config directory to path
+config_dir = Path(__file__).parent.parent / "config"
+sys.path.insert(0, str(config_dir))
+
+from api_config import api_config
 
 logger = logging.getLogger(__name__)
 
@@ -18,8 +26,17 @@ class PerplexityClient:
     def __init__(self):
         self.api_key = os.getenv("PERPLEXITY_API_KEY")
         self.base_url = "https://api.perplexity.ai/chat/completions"
-        self.model = "sonar-pro"
-        self.timeout = 30
+        
+        # Get configuration from centralized config
+        config = api_config.get_model_config("perplexity")
+        self.model = config.get("model", "sonar")
+        self.max_tokens = config.get("max_tokens", 400)
+        self.temperature = config.get("temperature", 0.2)
+        self.timeout = config.get("timeout", 30)
+        
+        # Get rate limiting config
+        rate_config = api_config.get_rate_limit_config("perplexity")
+        self.requests_per_minute = rate_config.get("requests_per_minute", 5)
         
         if not self.api_key:
             raise ValueError("PERPLEXITY_API_KEY environment variable is required")
@@ -47,8 +64,8 @@ class PerplexityClient:
                     "content": query_text
                 }
             ],
-            "max_tokens": 1000,
-            "temperature": 0.2,
+            "max_tokens": self.max_tokens,
+            "temperature": self.temperature,
             "top_p": 0.9,
             "return_citations": True,
             "search_domain_filter": [],

@@ -6,7 +6,14 @@ import logging
 from datetime import datetime
 from typing import List, Dict, Optional
 import asyncio
+import sys
+from pathlib import Path
 
+# Add config directory to path
+config_dir = Path(__file__).parent.parent / "config"
+sys.path.insert(0, str(config_dir))
+
+from api_config import api_config
 from .database import get_db, FirestoreHelper
 from .perplexity_client import PerplexityClient, perplexity_rate_limiter
 from .chatgpt_client import ChatGPTClient
@@ -27,9 +34,14 @@ class QueryRunner:
         self.google_ai_client = GoogleAIClient()
         self.citation_extractor = CitationExtractor()
     
-    async def run_all_queries(self) -> Dict:
-        """Run all active queries for all brands."""
+    async def run_all_queries(self, max_queries_per_run: int = None) -> Dict:
+        """Run all active queries for all brands with cost controls."""
         try:
+            # Get cost control configuration
+            cost_config = api_config.get_cost_control_config()
+            if max_queries_per_run is None:
+                max_queries_per_run = cost_config.get("max_queries_per_run", 10)
+            
             # Get all active brands
             brands = await self._get_active_brands()
             
@@ -39,11 +51,16 @@ class QueryRunner:
             
             for brand in brands:
                 brand_id = brand["id"]
-                brand_result = await self._run_brand_queries(brand_id)
+                brand_result = await self._run_brand_queries(brand_id, cost_config.get("max_queries_per_brand", 3))
                 
                 total_queries += brand_result["total_queries"]
                 successful_runs += brand_result["successful_runs"]
                 failed_runs += brand_result["failed_runs"]
+                
+                # Stop if we've hit the cost limit
+                if total_queries >= max_queries_per_run:
+                    logger.info(f"Reached cost limit of {max_queries_per_run} queries. Stopping.")
+                    break
             
             return {
                 "total_queries": total_queries,
@@ -58,7 +75,7 @@ class QueryRunner:
     
     async def run_brand_queries(self, brand_id: str) -> Dict:
         """Run all queries for a specific brand."""
-        return await self._run_brand_queries(brand_id)
+        return await self._run_brand_queries(brand_id, max_queries=10)
     
     async def run_single_query(self, brand_id: str, query_id: str) -> Dict:
         """Run a single query for a brand."""
@@ -91,7 +108,7 @@ class QueryRunner:
                 "error": str(e)
             }
     
-    async def _run_brand_queries(self, brand_id: str) -> Dict:
+    async def _run_brand_queries(self, brand_id: str, max_queries: int = 10) -> Dict:
         """Run all queries for a brand."""
         try:
             # Get brand data
